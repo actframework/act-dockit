@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markdown Editor</title>
+  <script src="markdown-it.js"></script>
+  <script src="markdown-it-footnote.js"></script>
+  <script src="emojify.js"></script>
+  <script src="prism-all.js" data-manual="true"></script>
+  <script src="mdedit.js"></script>
+  <script src="jquery.min.js"></script>
+  <link rel="stylesheet" href="prism.css">
+  <link rel="stylesheet" href="mdedit.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<app></app>
+<script type="riot/tag" src="app.tag.html"></script>
+<script type="riot/tag" src="nav.tag.html"></script>
+<script type="riot/tag" src="editor.tag.html"></script>
+<script type="riot/tag" src="preview.tag.html"></script>
+<script src="store.js"></script>
+<script src="riot.min.js"></script>
+<script src="riot-control.js"></script>
+<script>
+  var store = new Store();
+  RiotControl.addStore(store);
+  riot.mount('app')
+  window.appStore = store;
+  $.get("config", function(config) {
+    RiotControl.trigger('remote-config-loaded', config);
+  })
+</script>
+</body>
+</html>

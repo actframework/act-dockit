@@ -1,0 +1,71 @@
+<nav>
+  <style>
+    #nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 400px;
+      height: auto;
+      overflow: auto;
+      font-size: 12px;
+      box-shadow: -10px 2px 6px 10px rgba(0, 0, 0, 0.4);
+      background-color: #666;
+      color: #ddd;
+      font-size: 13pt;
+    }
+    #nav * {
+      color: #ddd;
+    }
+    #nav ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    #nav ul li {
+      display: inline-block;
+      padding: 10px 15px;
+      width: 100%
+    }
+    #nav ul li.current {
+      color: #fff;
+      font-weight: bold
+    }
+  </style>
+  <div id="nav" style="width: {width()};overflow-x: {overflowX()}">
+    <virtual if="{window.appStore.displayNav()}">
+      <ul each="{item in window.appStore.getList()}">
+          <li class="{current: item.current}">
+              <a href={item.url} onclick={load}>{item.label}</a>
+          </li>
+      </ul>
+    </virtual>
+  </div>
+  <script>
+    var self = this
+    self.toggleNav = function() {
+      RiotControl.trigger('toggle-nav')
+    }
+    self.width = function() {
+      return window.appStore.displayNav() ? '400px' : '10px'
+    }
+    self.overflowX = function() {
+      return window.appStore.displayNav() ? 'auto' : 'hidden'
+    }
+    self.load = function(e) {
+      e.stopImmediatePropagation()
+      var item = e.item.item
+      var url = item.url
+      item.current = true
+      if (url.endsWith('.md')) {
+        $.get(url, function(content) {
+          RiotControl.trigger('remote-content-loaded', content, item)
+        })
+      }
+      self.update()
+      return false
+    }
+    RiotControl.on('list-updated', function() {
+      self.update();
+    })
+  </script>
+</nav>

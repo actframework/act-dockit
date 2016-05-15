@@ -1,0 +1,34 @@
+<app>
+  <style>
+    #main {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      padding-left: 20px;
+      height: auto;
+      overflow: auto;
+      font-size: 12px;
+    }
+  </style>
+  <nav></nav>
+  <div id="main" style="margin-left: {marginLeft()}">
+    <editor></editor>
+    <preview></preview>
+  </div>
+
+  <script>
+    var self = this;
+    self.marginLeft = function() {
+      if (window.appStore.displayNav()) {
+        return "400px";
+      } else {
+        return "10px";
+      }
+    }
+    RiotControl.on('nav-toggled', function() {
+      self.update();
+    })
+  </script>
+</app>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markdown Editor</title>
+  <script src="markdown-it.js"></script>
+  <script src="markdown-it-footnote.js"></script>
+  <script src="emojify.js"></script>
+  <script src="prism-all.js" data-manual="true"></script>
+  <script src="mdedit.js"></script>
+  <link rel="stylesheet" href="prism.css">
+  <link rel="stylesheet" href="mdedit.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="nav"></div>
+<div id="in"><pre id="code">
+</pre>
+</div>
+<div id="out"></div>
+<script type="text/javascript">
+
+  // Because highlight.js is a bit awkward at times
+  var languageOverrides = {
+    js: 'javascript',
+    html: 'markup'
+  };
+
+  emojify.setConfig({img_dir: 'emoji'});
+
+  var md = markdownit({
+    html: true,
+    highlight: function (code, lang) {
+      if (languageOverrides[lang]) lang = languageOverrides[lang];
+      if (lang && Prism.languages[lang]) {
+        return Prism.highlight(code, Prism.languages[lang]);
+      }
+      return '';
+    }
+  }).use(markdownitFootnote);
+
+
+  function update(e) {
+    setOutput(e);
+  }
+
+  function setOutput(val) {
+    val = val.replace(/<equation>((.*?\n)*?.*?)<\/equation>/ig, function (a, b) {
+      return '<img src="http://latex.codecogs.com/png.latex?' + encodeURIComponent(b) + '" />';
+    });
+
+    var out = document.getElementById('out');
+    var old = out.cloneNode(true);
+    out.innerHTML = md.render(val);
+    emojify.run(out);
+
+    var allold = old.getElementsByTagName("*");
+    if (allold === undefined) return;
+
+    var allnew = out.getElementsByTagName("*");
+    if (allnew === undefined) return;
+
+    for (var i = 0, max = Math.min(allold.length, allnew.length); i < max; i++) {
+      if (!allold[i].isEqualNode(allnew[i])) {
+        out.scrollTop = allnew[i].offsetTop;
+        return;
+      }
+    }
+  }
+
+
+  var editor = mdEdit(document.getElementById('code'), {
+    change: update
+  });
+
+
+  document.addEventListener('drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      index.setValue(e.target.result);
+    };
+
+    reader.readAsText(e.dataTransfer.files[0]);
+  }, false);
+
+
+  function save(code, name) {
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.keyCode == 83 && (e.ctrlKey || e.metaKey)) {
+      //e.shiftKey ? showMenu() : saveAsMarkdown();
+
+      e.preventDefault();
+      return false;
+    }
+  });
+
+
+  if (window.location.hash) {
+    // todo load source from backend
+  } else {
+  }
+</script>
+</body>
+</html>
