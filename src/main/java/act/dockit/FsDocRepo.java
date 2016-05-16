@@ -61,6 +61,7 @@ public class FsDocRepo implements DocRepo {
     @Override
     public void persist(String path, String content) {
         File file = toFile(path);
+        file.getParentFile().mkdirs();
         IO.writeContent(content, file);
     }
 
