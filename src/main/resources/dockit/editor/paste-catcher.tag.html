@@ -21,28 +21,6 @@
         }
         // If we can't handle clipboard data directly (Firefox),
         // we need to read what was pasted from the contenteditable element
-      } else {
-        // This is a cheap trick to make sure we read the data
-        // AFTER it has been inserted.
-        setTimeout(checkInput, 1);
-      }
-    }
-
-    /* Parse the input in the paste catcher element */
-    function checkInput() {
-      // Store the pasted content in a variable
-      var child = pasteCatcher.childNodes[0];
-
-      // Clear the inner html to make sure we're always
-      // getting the latest inserted content
-      pasteCatcher.innerHTML = "";
-
-      if (child) {
-        // If the user pastes an image, the src attribute
-        // will represent the image as a base64 encoded string.
-        if (child.tagName === "IMG") {
-          console.log(child.src);
-        }
       }
     }
   </script>

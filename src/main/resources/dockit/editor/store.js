@@ -30,7 +30,7 @@ function Store() {
         if (data) {
             data.forEach(function(x) {
                 list.push({
-                    'label': x.path,
+                    'label': x.label ? x.label : x.path,
                     'url': _docUrl + x.path,
                     'isFolder': x.isFolder
                 })
@@ -61,7 +61,6 @@ function Store() {
         self.trigger('nav-toggled')
     })
     self.on('load-doc', function(item) {
-        console.log(item)
         var url = item.url
         if (item.isFolder) {
             $.get(url, onRemoteListLoad)

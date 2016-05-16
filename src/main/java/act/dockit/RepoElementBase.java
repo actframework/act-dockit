@@ -5,7 +5,7 @@ import org.osgl.$;
 /**
  * A base implementation of a {@link RepoElement}
  */
-public abstract class RepoElementBase implements RepoElement {
+public abstract class RepoElementBase implements RepoElement, Comparable<RepoElementBase> {
 
     private String path;
 
@@ -38,5 +38,18 @@ public abstract class RepoElementBase implements RepoElement {
             return that.path.equals(this.path);
         }
         return false;
+    }
+
+    @Override
+    public int compareTo(RepoElementBase o) {
+        if (isFolder() && o.isFolder()) {
+            return path.compareTo(o.path());
+        } else if (isFolder()) {
+            return -1;
+        } else if (o.isFolder()) {
+            return 1;
+        } else {
+            return path.compareTo(o.path());
+        }
     }
 }

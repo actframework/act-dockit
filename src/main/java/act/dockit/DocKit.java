@@ -120,7 +120,10 @@ public class DocKit {
             }
             if (isFolder(path)) {
                 List<RepoElement> elements = docRepo.list(path);
-                List<Map<String, Object>> list = C.list(elements).filter(IS_NOT_IMG).map(TO_JSON);
+                C.List<Map<Object, Object>> list = C.newList(elements).sorted().filter(IS_NOT_IMG).map(TO_JSON);
+                if (S.notBlank(path)) {
+                    list.prepend(C.map("path", S.beforeLast(path, "/"), "isFolder", true, "label", ".."));
+                }
                 result = new RenderJSON(JSON.toJSONString(list));
             } else if (isSource(path)) {
                 String source = docRepo.read(path);
@@ -178,10 +181,10 @@ public class DocKit {
         }
     };
 
-    private static $.Transformer<RepoElement, Map<String, Object>> TO_JSON = new $.Transformer<RepoElement, Map<String, Object>>() {
+    private static $.Transformer<RepoElement, Map<Object, Object>> TO_JSON = new $.Transformer<RepoElement, Map<Object, Object>>() {
         @Override
-        public Map<String, Object> transform(RepoElement repoElement) {
-            Map<String, Object> map = C.newMap();
+        public Map<Object, Object> transform(RepoElement repoElement) {
+            Map<Object, Object> map = C.newMap();
             map.put("path", repoElement.path());
             map.put("isFolder", repoElement.isFolder());
             return map;

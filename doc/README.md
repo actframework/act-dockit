@@ -1,12 +1,6 @@
-# ActFramework test
+# Act-Dockit
 
-put what ever
+This is a semi application that could be embedded into your project to facilitate project documentation creation
 
-```java
-public static void main() {}
-```
 
-![](/doc/img/2CmLgWc1.png)
-
-![](/doc/img/2CmLgWf2.png)
 

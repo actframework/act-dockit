@@ -24,7 +24,7 @@
     }
   </style>
   <paste-catcher></paste-catcher>
-  <div id="in" if={window.appStore.getContent()}><pre id="code">{window.appStore.getContent()}</pre></div>
+  <div id="in"><pre id="code">{window.appStore.getContent()}</pre></div>
   <script>
     var self = this, editor
 
@@ -56,7 +56,7 @@
       self.update()
       setTimeout(function() {
         editor.setValue(content)
-      }, 10)
+      }, 100)
     })
   </script>
 </editor>

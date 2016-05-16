@@ -8,55 +8,73 @@
       width: 400px;
       height: auto;
       overflow: auto;
-      font-size: 12px;
+      font-family: "Bitstream Vera Sans Mono", "Envy Code R", "Andale Mono", "Consolas", "Courier New", Monospaced;
       box-shadow: -10px 2px 6px 10px rgba(0, 0, 0, 0.4);
       background-color: #666;
-      color: #ddd;
-      font-size: 13pt;
     }
+
     #nav * {
-      color: #ddd;
+      color: #ccc;
     }
+
     #nav ul {
       list-style-type: none;
       padding-left: 0;
     }
+
     #nav ul li {
       display: inline-block;
-      padding: 0px 15px;
+      padding: 5px 15px;
       width: 100%
     }
-    #nav ul li.current {
-      color: #fff;
-      font-weight: bold
+
+    #nav ul li.current a * {
+      color: #f7f6d7 !important;
+    }
+
+    #nav ul li a span {
+      font-size: 10pt;
+      padding-left: 6px;
     }
   </style>
   <div id="nav" style="width: {width()};overflow-x: {overflowX()}">
     <virtual if="{window.appStore.displayNav()}">
-      <ul each="{item in window.appStore.getList()}">
-          <li class="{current: item.current}">
-              <a href={item.url} onclick={load}>{item.label}</a>
-          </li>
+      <ul>
+        <li class="{current: item.current}"  each="{item in window.appStore.getList()}">
+          <a href={item.url} onclick={load}>
+            <virtual if={item.isFolder}>
+              <i class="fa fa-folder" aria-hidden="true"></i>
+            </virtual>
+            <virtual if={!item.isFolder}>
+              <i class="fa fa-file-o" aria-hidden="true" if="{!item.current}"></i>
+              <virtual if="{item.current}">
+                  <i class="fa fa-edit" aria-hidden="true"></i>
+              </virtual>
+
+            </virtual>
+            <span>{item.label}</span></span>
+          </a>
+        </li>
       </ul>
     </virtual>
   </div>
   <script>
     var self = this
-    self.toggleNav = function() {
+    self.toggleNav = function () {
       RiotControl.trigger('toggle-nav')
     }
-    self.width = function() {
+    self.width = function () {
       return window.appStore.displayNav() ? '400px' : '10px'
     }
-    self.overflowX = function() {
+    self.overflowX = function () {
       return window.appStore.displayNav() ? 'auto' : 'hidden'
     }
-    self.load = function(e) {
+    self.load = function (e) {
       e.stopImmediatePropagation()
       RiotControl.trigger('load-doc', e.item.item)
       return false
     }
-    RiotControl.on('list-updated content-loaded', function() {
+    RiotControl.on('list-updated content-loaded', function () {
       self.update();
     })
   </script>
