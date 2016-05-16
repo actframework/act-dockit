@@ -28,15 +28,27 @@ function Store() {
     var onRemoteListLoad = function(data) {
         var list = []
         if (data) {
-            data.forEach(function(x) {
-                list.push({
-                    'label': x.label ? x.label : x.path,
-                    'url': _docUrl + x.path,
-                    'isFolder': x.isFolder
-                })
-            })
+            for (var i = 0, j = data.length; i < j; ++i) {
+                var x = data[i]
+                if (x.label == '.') {
+                    _path = x.path
+                } else {
+                    list.push({
+                        'label': x.label ? x.label : x.path,
+                        'url': _docUrl + x.path,
+                        'isFolder': x.isFolder
+                    })
+                }
+            }
         }
         setList(list)
+        for(var i = 0, j = list.length; i < j; ++i) {
+            var x = list[i]
+            if (!x.isFolder) {
+                RiotControl.trigger('load-doc', x)
+                return
+            }
+        }
     }
     var saveDoc = function() {
         var target = curDoc()
@@ -99,13 +111,40 @@ function Store() {
         }
         reader.readAsDataURL(blob);
     })
+    self.on('big-input-entered', function(value, type) {
+        if ('filename' == type) {
+            _list.forEach(function(x) {delete x.current})
+            var url = _docUrl + value
+            if (!value.startsWith('/')) {
+                url = _docUrl + '/' + value
+            }
+            _list.push({
+                url: url,
+                label: value,
+                isFolder: false,
+                current: true
+            })
+            _content = ''
+            RiotControl.trigger('content-loaded', _content)
+        }
+    })
 
     document.addEventListener('keydown', function (e) {
-        if (e.keyCode == 83 && (e.ctrlKey || e.metaKey)) {
-            //e.shiftKey ? showMenu() : saveAsMarkdown();
-            e.preventDefault()
-            saveDoc()
-            return false
+        if (e.ctrlKey || e.metaKey) {
+            if (e.keyCode == 83) {
+                e.preventDefault()
+                saveDoc()
+                return false
+            } else if (e.keyCode == 88 || e.keyCode == 77) {
+                e.preventDefault()
+                var filename = '/new-file.md'
+                if (_path) {
+                    filename = _path + filename
+                }
+                saveDoc()
+                RiotControl.trigger('ask-new-filename', filename)
+                return false
+            }
         }
     });
 }

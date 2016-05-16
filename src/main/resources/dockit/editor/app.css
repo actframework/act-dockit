@@ -31,13 +31,10 @@ body {
     font-style: italic;
 }
 
-.view #in {
-    display: none;
-}
-
-.view #out {
-    left: 0;
-    padding-left: 10px;
+input {
+    background-color: #fff;
+    border: solid 1px #707070;
+    box-shadow: 0 0 5px 1px #969696;
 }
 
 a {

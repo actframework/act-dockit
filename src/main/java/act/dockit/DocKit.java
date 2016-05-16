@@ -124,6 +124,7 @@ public class DocKit {
                 C.List<Map<Object, Object>> list = C.newList(elements).sorted().filter(FILTER).map(TO_JSON);
                 if (S.notBlank(path)) {
                     list.prepend(C.map("path", S.beforeLast(path, "/"), "isFolder", true, "label", ".."));
+                    list.prepend(C.map("path", path, "isFolder", true, "label", "."));
                 }
                 result = new RenderJSON(JSON.toJSONString(list));
             } else if (isSource(path)) {

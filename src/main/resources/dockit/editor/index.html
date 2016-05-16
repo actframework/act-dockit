@@ -15,18 +15,22 @@
 </head>
 <body>
 <app></app>
+<big-input></big-input>
+<overlay></overlay>
 <script type="riot/tag" src="app.tag.html"></script>
 <script type="riot/tag" src="nav.tag.html"></script>
 <script type="riot/tag" src="editor.tag.html"></script>
 <script type="riot/tag" src="preview.tag.html"></script>
 <script type="riot/tag" src="paste-catcher.tag.html"></script>
+<script type="riot/tag" src="overlay.tag.html"></script>
+<script type="riot/tag" src="big-input.tag.html"></script>
 <script src="store.js"></script>
 <script src="riot.min.js"></script>
 <script src="riot-control.js"></script>
 <script>
   var store = new Store();
   RiotControl.addStore(store);
-  riot.mount('app')
+  riot.mount('*')
   window.appStore = store;
   $.get("config", function(config) {
     RiotControl.trigger('remote-config-loaded', config);

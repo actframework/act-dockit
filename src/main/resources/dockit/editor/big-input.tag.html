@@ -1,0 +1,56 @@
+<big-input>
+  <style>
+    #big-input {
+      display: none;
+      position: fixed;
+      border-radius: 5px;
+      top: 30%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 50px;
+      padding: 10px 15px;
+      font-size: 24pt;
+      font-weight: bold;
+      z-index: 9999;
+    }
+    #big-input.show {
+      display: block
+    }
+  </style>
+  <input id="big-input" class="{show: show()}" autofocus>
+  <script>
+    var show = false, self = this, type
+    this.show = function() {
+      return show
+    }
+    function hideMe() {
+      show = false
+      type = false
+      self.update()
+    }
+    RiotControl.on('ask-new-filename', function(filename) {
+      show = true
+      type = 'filename'
+      document.getElementById('big-input').value = filename
+      self.update()
+    })
+    this.on('updated', function() {
+      var input = document.getElementById('big-input')
+      input.addEventListener('keydown', function(e) {
+        if (13 == e.keyCode) {
+          e.preventDefault()
+          RiotControl.trigger('big-input-entered', input.value, type)
+          hideMe()
+          return false
+        } else if (27 == e.keyCode) {
+          e.preventDefault()
+          RiotControl.trigger('big-input-canceled')
+          hideMe()
+          return false
+        }
+      })
+    })
+  </script>
+</big-input>
