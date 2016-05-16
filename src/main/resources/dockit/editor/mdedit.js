@@ -1078,6 +1078,33 @@ Editor.prototype.paste = function(evt){
   }
 };
 
+Editor.prototype.insert = function(content) {
+  var start = this.selMgr.getStart();
+  var end = this.selMgr.getEnd();
+  var selection = start === end ? '' : this.el.textContent.slice(start, end);
+
+  if(content){
+
+    var pasted = content;
+
+    this.apply({
+      add: pasted,
+      del: selection,
+      start: start
+    });
+
+    this.undoMgr.action({
+      add: pasted,
+      del: selection,
+      start: start
+    });
+
+    start += pasted.length;
+    this.selMgr.setRange(start, start);
+    this.changed();
+  }
+}
+
 return Editor;
 
 }));

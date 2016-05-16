@@ -28,6 +28,7 @@ public class DocEditor extends FastRequestHandler {
     private String urlContext;
     private String portName;
     private String docUrlContext;
+    private String imgUrlContext;
 
     private DocEditor() {}
 
@@ -35,10 +36,10 @@ public class DocEditor extends FastRequestHandler {
     public void handle(ActionContext context) {
         String path = context.paramVal(ParamNames.PATH);
         if (S.blank(path)) {
-            new Redirect(editorRoot + "/index.html").apply(context);
+            new Redirect(urlContext + "/index.html").apply(context);
         } else {
             if (path.startsWith("/config")) {
-                new RenderJSON(C.newMap("docUrl", docUrlContext)).apply(context.req(), context.resp());
+                new RenderJSON(C.newMap("docUrl", docUrlContext, "imgUrl", imgUrlContext)).apply(context.req(), context.resp());
                 return;
             }
             if (path.endsWith(".css")) {
@@ -97,6 +98,11 @@ public class DocEditor extends FastRequestHandler {
 
         public Builder docUrl(String url) {
             editor.docUrlContext = url;
+            return this;
+        }
+
+        public Builder imgUrl(String url) {
+            editor.imgUrlContext = url;
             return this;
         }
 

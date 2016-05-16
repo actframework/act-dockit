@@ -2,9 +2,7 @@ package test;
 
 import act.Act;
 import act.app.event.AppEventId;
-import act.dockit.DocEditor;
-import act.dockit.DocKit;
-import act.dockit.FsDocRepo;
+import act.dockit.*;
 import act.job.OnAppEvent;
 
 import java.io.File;
@@ -15,9 +13,9 @@ public class BootDocKit {
     public static void loadDocKit() {
         if (Act.isDev()) {
             FsDocRepo docRepo = new FsDocRepo(new File("doc"));
-            new DocKit(docRepo, "/doc");
-
-            new DocEditor.Builder().urlContext("/editor").docUrl("/doc").build();
+            FsImgRepo imgRepo = new FsImgRepo(new File("doc/img"));
+            new DocKit.Builder().docRepo(docRepo).imgRepo(imgRepo).urlContext("/doc").build();
+            new DocEditor.Builder().urlContext("/editor").docUrl("/doc").imgUrl("/doc/img").build();
         }
     }
 

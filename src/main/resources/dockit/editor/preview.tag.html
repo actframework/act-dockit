@@ -42,7 +42,9 @@
       html: 'markup'
     };
 
-    emojify.setConfig({img_dir: 'emoji'});
+    if (typeof emojify != 'undefined') {
+      emojify.setConfig({img_dir: 'emoji'});
+    }
 
     var md = markdownit({
       html: true,

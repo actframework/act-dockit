@@ -23,7 +23,7 @@
     }
     #nav ul li {
       display: inline-block;
-      padding: 10px 15px;
+      padding: 0px 15px;
       width: 100%
     }
     #nav ul li.current {
@@ -53,18 +53,10 @@
     }
     self.load = function(e) {
       e.stopImmediatePropagation()
-      var item = e.item.item
-      var url = item.url
-      item.current = true
-      if (url.endsWith('.md')) {
-        $.get(url, function(content) {
-          RiotControl.trigger('remote-content-loaded', content, item)
-        })
-      }
-      self.update()
+      RiotControl.trigger('load-doc', e.item.item)
       return false
     }
-    RiotControl.on('list-updated', function() {
+    RiotControl.on('list-updated content-loaded', function() {
       self.update();
     })
   </script>

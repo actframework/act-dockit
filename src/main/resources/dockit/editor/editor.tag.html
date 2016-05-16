@@ -23,6 +23,7 @@
       font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
     }
   </style>
+  <paste-catcher></paste-catcher>
   <div id="in" if={window.appStore.getContent()}><pre id="code">{window.appStore.getContent()}</pre></div>
   <script>
     var self = this, editor
@@ -39,8 +40,23 @@
         editor.selMgr.setRange(len, len)
       }
     })
-    RiotControl.on('content-loaded', function() {
+
+    RiotControl.on('img-pasted', function () {
+      editor.insert('uploading ...')
+    })
+
+    RiotControl.on('img-uploaded', function(url) {
+      var paste = '![image](' + url + ')'
+      var start = editor.selMgr.getStart()
+      editor.selMgr.setRange(start - 'uploading ...'.length, start)
+      editor.insert(paste)
+    })
+
+    RiotControl.on('content-loaded', function(content) {
       self.update()
+      setTimeout(function() {
+        editor.setValue(content)
+      }, 10)
     })
   </script>
 </editor>
