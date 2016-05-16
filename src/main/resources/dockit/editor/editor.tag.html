@@ -26,11 +26,11 @@
   <paste-catcher></paste-catcher>
   <div id="in"><pre id="code">{window.appStore.getContent()}</pre></div>
   <script>
-    var self = this, editor
+    var self = this, editor = false
 
     this.on('updated', function() {
       var dock = (document.getElementById('code'))
-      if (dock) {
+      if (dock && !editor) {
         editor = mdEdit(document.getElementById('code'), {
           change: function(content) {
             RiotControl.trigger('editor-updated', content)
