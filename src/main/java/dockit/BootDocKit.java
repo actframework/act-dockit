@@ -1,8 +1,6 @@
 package dockit;
 
-import act.app.*;
 import act.app.event.AppEventId;
-import act.app.util.NamedPort;
 import act.dockit.DocEditor;
 import act.dockit.DocKit;
 import act.dockit.FsDocRepo;
@@ -15,7 +13,6 @@ import org.osgl.logging.Logger;
 import org.osgl.util.S;
 
 import java.io.File;
-import java.util.List;
 
 public class BootDocKit {
 

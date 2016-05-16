@@ -1,0 +1,62 @@
+<editor>
+  <style>
+    #in {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 50%;
+      height: auto;
+      overflow: auto;
+      font-size: 12px;
+      box-shadow: -10px 2px 6px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    #code {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+      padding: 30px;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+  </style>
+  <paste-catcher></paste-catcher>
+  <div id="in"><pre id="code">{window.appStore.getContent()}</pre></div>
+  <script>
+    var self = this, editor = false
+
+    this.on('updated', function() {
+      var dock = (document.getElementById('code'))
+      if (dock && !editor) {
+        editor = mdEdit(document.getElementById('code'), {
+          change: function(content) {
+            RiotControl.trigger('editor-updated', content)
+          }
+        })
+        var len = editor.el.innerText.length
+        editor.selMgr.setRange(len, len)
+      }
+    })
+
+    RiotControl.on('img-pasted', function () {
+      editor.insert('uploading ...')
+    })
+
+    RiotControl.on('img-uploaded', function(url) {
+      var paste = '![image](' + url + ')'
+      var start = editor.selMgr.getStart()
+      editor.selMgr.setRange(start - 'uploading ...'.length, start)
+      editor.insert(paste)
+    })
+
+    RiotControl.on('content-loaded', function(content) {
+      self.update()
+      setTimeout(function() {
+        editor.setValue(content)
+      }, 100)
+    })
+  </script>
+</editor>

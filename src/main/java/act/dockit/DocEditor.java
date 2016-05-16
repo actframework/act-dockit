@@ -4,7 +4,6 @@ import act.Act;
 import act.app.ActionContext;
 import act.app.App;
 import act.app.event.AppEventId;
-import act.app.util.NamedPort;
 import act.controller.ParamNames;
 import act.handler.builtin.Redirect;
 import act.handler.builtin.controller.FastRequestHandler;
@@ -16,7 +15,6 @@ import org.osgl.util.S;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 
 import static act.controller.Controller.Util.notFoundIfNot;
 import static act.controller.Controller.Util.notFoundIfNull;

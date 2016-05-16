@@ -1,0 +1,91 @@
+<preview>
+  <style>
+    #out {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 50%;
+      bottom: 0;
+      overflow: auto;
+      padding: 10px;
+      padding-left: 20px;
+      color: #444;
+      font-size: 16px;
+      line-height: 1.5em
+    }
+
+    #out pre, code {
+      color: #000;
+      font-family: "Bitstream Vera Sans Mono", "Envy Code R", Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
+      font-size: 0.94em; /* 0.94 = 0.88 + (1.00 - 0.88) / 2 */
+    }
+
+    #out pre {
+      white-space: pre;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      padding: 5px;
+    }
+
+    .emoji {
+      width: 1em;
+      height: 1em;
+      vertical-align: baseline;
+    }
+
+  </style>
+  <div id="out"></div>
+  <script>
+    // Because highlight.js is a bit awkward at times
+    var languageOverrides = {
+      js: 'javascript',
+      html: 'markup'
+    };
+
+    if (typeof emojify != 'undefined') {
+      emojify.setConfig({img_dir: 'emoji'});
+    }
+
+    var md = markdownit({
+      html: true,
+      highlight: function (code, lang) {
+        if (languageOverrides[lang]) lang = languageOverrides[lang];
+        if (lang && Prism.languages[lang]) {
+          return Prism.highlight(code, Prism.languages[lang]);
+        }
+        return '';
+      }
+    }).use(markdownitFootnote);
+
+    function setOutput(val) {
+      val = val.replace(/<equation>((.*?\n)*?.*?)<\/equation>/ig, function (a, b) {
+        return '<img src="http://latex.codecogs.com/png.latex?' + encodeURIComponent(b) + '" />';
+      });
+
+      var out = document.getElementById('out');
+      if (!out) return
+      var old = out.cloneNode(true);
+      out.innerHTML = md.render(val);
+      if (typeof emojify != 'undefined') {
+        emojify.run(out);
+      }
+
+      var allold = old.getElementsByTagName("*");
+      if (allold === undefined) return;
+
+      var allnew = out.getElementsByTagName("*");
+      if (allnew === undefined) return;
+
+      for (var i = 0, max = Math.min(allold.length, allnew.length); i < max; i++) {
+        if (!allold[i].isEqualNode(allnew[i])) {
+          out.scrollTop = allnew[i].offsetTop;
+          return;
+        }
+      }
+    }
+
+    RiotControl.on('content-loaded content-updated', function(e, content) {
+      setOutput(content)
+    })
+  </script>
+</preview>

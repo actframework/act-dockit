@@ -6,7 +6,7 @@ import org.osgl.util.E;
 import org.osgl.util.IO;
 import org.osgl.util.S;
 
-import java.io.*;
+import java.io.File;
 import java.util.List;
 
 /**

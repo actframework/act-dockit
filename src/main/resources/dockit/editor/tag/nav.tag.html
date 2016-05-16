@@ -1,0 +1,102 @@
+<nav>
+  <style>
+    #close-nav {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+    #close-nav:hover {
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 400px;
+      height: auto;
+      overflow: auto;
+      font-family: "Bitstream Vera Sans Mono", "Envy Code R", "Andale Mono", "Consolas", "Courier New", Monospaced;
+      box-shadow: -10px 2px 6px 10px rgba(0, 0, 0, 0.4);
+      background-color: #666;
+      z-index: 8;
+    }
+
+    #nav * {
+      color: #ccc;
+    }
+
+    #nav ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    #nav ul li {
+      display: inline-block;
+      padding: 5px 15px;
+      width: 100%
+    }
+
+    #nav ul li.current a * {
+      color: #f7f6d7 !important;
+    }
+
+    #nav ul li a span {
+      font-size: 10pt;
+      padding-left: 6px;
+    }
+  </style>
+  <div id="nav" style="width: {width()};overflow-x: {overflowX()}">
+    <virtual if="{window.appStore.displayNav()}">
+      <i class="fa fa-compress" aria-hidden="true" id="close-nav" onclick={toggleNav}></i>
+      <ul>
+        <li class="{current: item.current}"  each="{item in window.appStore.getList()}">
+          <a href={item.url} onclick={load}>
+            <virtual if={item.isFolder}>
+              <i class="fa fa-folder" aria-hidden="true"></i>
+            </virtual>
+            <virtual if={!item.isFolder}>
+              <i class="fa fa-file-o" aria-hidden="true" if="{!item.current}"></i>
+              <virtual if="{item.current}">
+                  <i class="fa fa-edit" aria-hidden="true"></i>
+              </virtual>
+
+            </virtual>
+            <span>{item.label}</span></span>
+          </a>
+        </li>
+      </ul>
+    </virtual>
+  </div>
+  <script>
+    var self = this
+    self.toggleNav = function () {
+      RiotControl.trigger('toggle-nav')
+    }
+    self.width = function () {
+      return window.appStore.displayNav() ? '400px' : '10px'
+    }
+    self.overflowX = function () {
+      return window.appStore.displayNav() ? 'auto' : 'hidden'
+    }
+    self.load = function (e) {
+      e.stopImmediatePropagation()
+      RiotControl.trigger('load-doc', e.item.item)
+      return false
+    }
+    self.on('updated', function() {
+      var nav = document.getElementById('nav')
+      if (!nav) return
+      if (!window.appStore.displayNav()) {
+        nav.addEventListener('click', self.toggleNav)
+      } else {
+        nav.removeEventListener('click', self.toggleNav)
+      }
+    })
+    RiotControl.on('list-updated content-loaded', function () {
+      self.update();
+    })
+  </script>
+</nav>
