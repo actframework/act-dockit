@@ -88,4 +88,8 @@ public class FsDocRepo implements DocRepo {
         return S.after(path, rootPath);
     }
 
+    @Override
+    public String toString() {
+        return S.fmt("DocRepo[%s]", root.getAbsolutePath());
+    }
 }

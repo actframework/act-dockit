@@ -2,6 +2,7 @@ package act.dockit;
 
 import org.osgl.util.E;
 import org.osgl.util.IO;
+import org.osgl.util.S;
 
 import java.io.*;
 
@@ -27,5 +28,10 @@ public class FsImgRepo implements ImgRepo {
     public void persist(String path, InputStream data) throws IOException {
         File file = new File(root, path);
         IO.copy(data, new BufferedOutputStream(new FileOutputStream(file)));
+    }
+
+    @Override
+    public String toString() {
+        return S.fmt("ImgRepo[%s]", root.getAbsolutePath());
     }
 }

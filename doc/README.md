@@ -3,7 +3,7 @@
 This is a semi application that could be embedded into your project to facilitate project documentation creation
 ddd
 dddd
-
+![image](/doc/img/2CmLgWs1.png)
 #ddd
 
 

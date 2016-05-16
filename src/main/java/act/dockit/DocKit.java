@@ -12,6 +12,8 @@ import com.alibaba.fastjson.JSON;
 import org.osgl.$;
 import org.osgl.Osgl;
 import org.osgl.http.H;
+import org.osgl.logging.LogManager;
+import org.osgl.logging.Logger;
 import org.osgl.mvc.result.*;
 import org.osgl.util.C;
 import org.osgl.util.Codec;
@@ -32,6 +34,8 @@ import static act.controller.Controller.Util.notFoundIf;
  * Mount a {@link DocRepo} to a web application
  */
 public class DocKit {
+
+    private static Logger logger = LogManager.get(DocKit.class);
 
     private ImgRepo imgRepo;
     private DocRepo docRepo;
@@ -102,6 +106,11 @@ public class DocKit {
         } else {
             sourceIndexes.add(path);
         }
+    }
+
+    @Override
+    public String toString() {
+        return S.fmt("repo\n\turlContext:%s\n\timgUrlPath:%s\n\t%s\n\t%s", urlContext, imgPath, docRepo, imgRepo);
     }
 
     private class Getter extends ResourceHandlerBase {
