@@ -1,5 +1,15 @@
 <nav>
   <style>
+    #close-nav {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+    #close-nav:hover {
+      color: #fff;
+      cursor: pointer;
+    }
+
     #nav {
       position: fixed;
       top: 0;
@@ -39,6 +49,7 @@
   </style>
   <div id="nav" style="width: {width()};overflow-x: {overflowX()}">
     <virtual if="{window.appStore.displayNav()}">
+      <i class="fa fa-compress" aria-hidden="true" id="close-nav" onclick={toggleNav}></i>
       <ul>
         <li class="{current: item.current}"  each="{item in window.appStore.getList()}">
           <a href={item.url} onclick={load}>
@@ -74,6 +85,15 @@
       RiotControl.trigger('load-doc', e.item.item)
       return false
     }
+    self.on('updated', function() {
+      var nav = document.getElementById('nav')
+      if (!nav) return
+      if (!window.appStore.displayNav()) {
+        nav.addEventListener('click', self.toggleNav)
+      } else {
+        nav.removeEventListener('click', self.toggleNav)
+      }
+    })
     RiotControl.on('list-updated content-loaded', function () {
       self.update();
     })
