@@ -42,6 +42,7 @@ public class DocKit {
     private Set<String> folderIndexes = C.newSet();
     private String portName;
     private IdGenerator idGenerator = new IdGenerator(".img.id.do-not-delete");
+    private Set<String> suffixies = C.set();
 
     private DocKit() {
         refreshImgUrl();
@@ -120,7 +121,7 @@ public class DocKit {
             }
             if (isFolder(path)) {
                 List<RepoElement> elements = docRepo.list(path);
-                C.List<Map<Object, Object>> list = C.newList(elements).sorted().filter(IS_NOT_IMG).map(TO_JSON);
+                C.List<Map<Object, Object>> list = C.newList(elements).sorted().filter(FILTER).map(TO_JSON);
                 if (S.notBlank(path)) {
                     list.prepend(C.map("path", S.beforeLast(path, "/"), "isFolder", true, "label", ".."));
                 }
@@ -171,11 +172,14 @@ public class DocKit {
 
     }
 
-    private $.Predicate<RepoElement> IS_NOT_IMG = new Osgl.Predicate<RepoElement>() {
+    private $.Predicate<RepoElement> FILTER = new Osgl.Predicate<RepoElement>() {
         @Override
         public boolean test(RepoElement repoElement) {
             if (repoElement.isFolder()) {
                 return !(repoElement.path().startsWith(imgPath));
+            } else if (!suffixies.isEmpty()) {
+                String suffix = "." + S.afterLast(repoElement.path(), ".");
+                return suffixies.contains(suffix);
             }
             return true;
         }
@@ -218,6 +222,11 @@ public class DocKit {
 
         public Builder portName(String portName) {
             docKit.portName = portName;
+            return this;
+        }
+
+        public Builder suffixes(String suffixes) {
+            docKit.suffixies = C.setOf(suffixes.split(S.COMMON_SEP));
             return this;
         }
 

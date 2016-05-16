@@ -14,7 +14,7 @@ public class BootDocKit {
         if (Act.isDev()) {
             FsDocRepo docRepo = new FsDocRepo(new File("doc"));
             FsImgRepo imgRepo = new FsImgRepo(new File("doc/img"));
-            new DocKit.Builder().docRepo(docRepo).imgRepo(imgRepo).urlContext("/doc").build();
+            new DocKit.Builder().docRepo(docRepo).imgRepo(imgRepo).urlContext("/doc").suffixes(".md").build();
             new DocEditor.Builder().urlContext("/editor").docUrl("/doc").imgUrl("/doc/img").build();
         }
     }
