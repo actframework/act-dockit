@@ -14,7 +14,7 @@ public class FsImgRepo implements ImgRepo {
     private File root;
 
     public FsImgRepo(File root) {
-        E.illegalArgumentIf(!root.isDirectory());
+        E.illegalArgumentIf(!root.isDirectory(), "%s is not a directory", root.getAbsolutePath());
         this.root = root;
     }
 

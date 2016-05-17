@@ -100,7 +100,7 @@ function Store() {
     })
     self.on('remote-config-loaded', function(config) {
         _docUrl = config.docUrl
-        _imgUrl = config.imgUrl
+        _imgUrl = _docUrl + config.imgPath
         loadDoc()
     })
     self.on('img-pasted', function(blob) {

@@ -37,18 +37,18 @@ public class DocKit {
 
     private static Logger logger = LogManager.get(DocKit.class);
 
-    private ImgRepo imgRepo;
-    private DocRepo docRepo;
-    private String urlContext = "/doc";
-    private String imgPath = "/img";
-    private String imgUrl;
+    DocRepo docRepo;
+    ImgRepo imgRepo;
+    String urlContext = "/doc";
+    String imgPath = "/img";
+    String imgUrl;
+    String portName;
+    Set<String> suffixies = C.set();
     private Set<String> sourceIndexes = C.newSet();
     private Set<String> folderIndexes = C.newSet();
-    private String portName;
     private IdGenerator idGenerator = new IdGenerator(".img.id.do-not-delete");
-    private Set<String> suffixies = C.set();
 
-    private DocKit() {
+    DocKit() {
         refreshImgUrl();
         Act.jobManager().on(AppEventId.POST_START, new Runnable() {
             @Override
@@ -65,7 +65,7 @@ public class DocKit {
         router.addMapping(H.Method.POST, urlContext, new Saver());
     }
 
-    private void refreshImgUrl() {
+    void refreshImgUrl() {
         imgUrl = S.builder(urlContext).append(imgPath).toString();
     }
 
@@ -130,7 +130,26 @@ public class DocKit {
             }
             if (isFolder(path)) {
                 List<RepoElement> elements = docRepo.list(path);
-                C.List<Map<Object, Object>> list = C.newList(elements).sorted().filter(FILTER).map(TO_JSON);
+                C.List<Map<Object, Object>> list = C.newList(elements).sorted().filter(new Osgl.Predicate<RepoElement>() {
+                    @Override
+                    public boolean test(RepoElement repoElement) {
+                        if (repoElement.isFolder()) {
+                            return !(repoElement.path().startsWith(imgPath));
+                        } else if (!suffixies.isEmpty()) {
+                            String suffix = "." + S.afterLast(repoElement.path(), ".");
+                            return suffixies.contains(suffix);
+                        }
+                        return true;
+                    }
+                }).map(new $.Transformer<RepoElement, Map<Object, Object>>() {
+                    @Override
+                    public Map<Object, Object> transform(RepoElement repoElement) {
+                        Map<Object, Object> map = C.newMap();
+                        map.put("path", repoElement.path());
+                        map.put("isFolder", repoElement.isFolder());
+                        return map;
+                    }
+                });
                 if (S.notBlank(path)) {
                     list.prepend(C.map("path", S.beforeLast(path, "/"), "isFolder", true, "label", ".."));
                     list.prepend(C.map("path", path, "isFolder", true, "label", "."));
@@ -182,29 +201,6 @@ public class DocKit {
 
     }
 
-    private $.Predicate<RepoElement> FILTER = new Osgl.Predicate<RepoElement>() {
-        @Override
-        public boolean test(RepoElement repoElement) {
-            if (repoElement.isFolder()) {
-                return !(repoElement.path().startsWith(imgPath));
-            } else if (!suffixies.isEmpty()) {
-                String suffix = "." + S.afterLast(repoElement.path(), ".");
-                return suffixies.contains(suffix);
-            }
-            return true;
-        }
-    };
-
-    private static $.Transformer<RepoElement, Map<Object, Object>> TO_JSON = new $.Transformer<RepoElement, Map<Object, Object>>() {
-        @Override
-        public Map<Object, Object> transform(RepoElement repoElement) {
-            Map<Object, Object> map = C.newMap();
-            map.put("path", repoElement.path());
-            map.put("isFolder", repoElement.isFolder());
-            return map;
-        }
-    };
-
     public static class Builder {
         private DocKit docKit = new DocKit();
 
@@ -219,12 +215,18 @@ public class DocKit {
         }
 
         public Builder urlContext(String context) {
+            if (context.endsWith("/")) {
+                context = context.substring(0, context.length() - 1);
+            }
             docKit.urlContext = context;
             docKit.refreshImgUrl();
             return this;
         }
 
         public Builder imgPath(String path) {
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
             docKit.imgPath = path;
             docKit.refreshImgUrl();
             return this;

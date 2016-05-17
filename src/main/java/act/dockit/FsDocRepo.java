@@ -25,7 +25,13 @@ public class FsDocRepo implements DocRepo {
 
     @Override
     public DocFolder root() {
-        return $.cast(fromFile(root));
+        RepoElement element = fromFile(root);
+        try {
+            return $.cast(element);
+        } catch (ClassCastException e) {
+            System.out.println(root.getAbsolutePath());
+            throw e;
+        }
     }
 
     @Override
@@ -46,7 +52,7 @@ public class FsDocRepo implements DocRepo {
         File dir = toFile(path);
         File[] fa = dir.listFiles();
         List<RepoElement> list = C.newList();
-        for (File file: fa) {
+        for (File file : fa) {
             list.add(fromFile(file));
         }
         return list;

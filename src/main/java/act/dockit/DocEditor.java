@@ -18,19 +18,20 @@ import java.io.InputStream;
 
 import static act.controller.Controller.Util.notFoundIfNot;
 import static act.controller.Controller.Util.notFoundIfNull;
+import static act.controller.Controller.Util.redirect;
 
 /**
  * Request handler for editor access
  */
 public class DocEditor extends FastRequestHandler {
 
-    private File editorRoot;
-    private String urlContext;
-    private String portName;
-    private String docUrlContext;
-    private String imgUrlContext;
+    File editorRoot;
+    String urlContext;
+    String portName;
+    String docUrlContext;
+    String imgPath;
 
-    private DocEditor() {}
+    DocEditor() {}
 
     @Override
     public void handle(ActionContext context) {
@@ -39,7 +40,7 @@ public class DocEditor extends FastRequestHandler {
             new Redirect(urlContext + "/index.html").apply(context);
         } else {
             if (path.startsWith("/config")) {
-                new RenderJSON(C.newMap("docUrl", docUrlContext, "imgUrl", imgUrlContext)).apply(context.req(), context.resp());
+                new RenderJSON(C.newMap("docUrl", docUrlContext, "imgPath", imgPath)).apply(context.req(), context.resp());
                 return;
             }
             if (path.endsWith(".css")) {
@@ -48,6 +49,9 @@ public class DocEditor extends FastRequestHandler {
                 context.resp().contentType("text/javascript");
             }
             InputStream is = load(path);
+            if (null == is) {
+                throw redirect("%s/%s", docUrlContext, path);
+            }
             IO.copy(is, context.resp().outputStream());
         }
     }
@@ -60,16 +64,14 @@ public class DocEditor extends FastRequestHandler {
     private InputStream load(String path) {
         if (null != editorRoot) {
             File file = new File(editorRoot, path);
-            notFoundIfNot(file.exists() && file.canRead());
-            return IO.is(file);
+            return file.exists() && file.canRead() ? IO.is(file) : null;
         } else {
             InputStream is = DocEditor.class.getResourceAsStream("/dockit/editor" + path);
-            notFoundIfNull(is);
             return is;
         }
     }
 
-    private void registerToRouter() {
+    void registerToRouter() {
         Act.jobManager().on(AppEventId.PRE_START, new Runnable() {
             @Override
             public void run() {
@@ -108,8 +110,11 @@ public class DocEditor extends FastRequestHandler {
             return this;
         }
 
-        public Builder imgUrl(String url) {
-            editor.imgUrlContext = url;
+        public Builder imgPath(String path) {
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            editor.imgPath = path;
             return this;
         }
 
@@ -118,4 +123,5 @@ public class DocEditor extends FastRequestHandler {
             return editor;
         }
     }
+
 }

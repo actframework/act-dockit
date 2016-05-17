@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markdown Editor</title>
+  <script src="js/markdown-it.js"></script>
+  <script src="js/markdown-it-footnote.js"></script>
+  <script src="js/emojify.js"></script>
+  <script src="js/prism-all.js" data-manual="true"></script>
+  <script src="js/mdedit.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/prism.css">
+  <link rel="stylesheet" href="css/mdedit.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<app></app>
+<big-input></big-input>
+<overlay></overlay>
+<script type="riot/tag" src="tag/app.tag.html"></script>
+<script type="riot/tag" src="tag/nav.tag.html"></script>
+<script type="riot/tag" src="tag/editor.tag.html"></script>
+<script type="riot/tag" src="tag/preview.tag.html"></script>
+<script type="riot/tag" src="tag/paste-catcher.tag.html"></script>
+<script type="riot/tag" src="tag/overlay.tag.html"></script>
+<script type="riot/tag" src="tag/big-input.tag.html"></script>
+<script src="js/store.js"></script>
+<script src="js/riot.min.js"></script>
+<script src="js/riot-control.js"></script>
+<script>
+  var store = new Store();
+  RiotControl.addStore(store);
+  riot.mount('*')
+  window.appStore = store;
+  $.get("config", function(config) {
+    RiotControl.trigger('remote-config-loaded', config);
+  })
+</script>
+</body>
+</html>
