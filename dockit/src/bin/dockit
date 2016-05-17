@@ -1,0 +1,5 @@
+#!/bin/bash
+BASE=`dirname "$0"`
+CP=$BASE/lib/
+echo $CP
+java $JAVA_OPTS -Dapp.mode=prod -cp "$CP*" $* dockit.Application
