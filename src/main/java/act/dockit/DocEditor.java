@@ -40,7 +40,7 @@ public class DocEditor extends FastRequestHandler {
             new Redirect(urlContext + "/index.html").apply(context);
         } else {
             if (path.startsWith("/config")) {
-                new RenderJSON(C.newMap("docUrl", docUrlContext, "imgPath", imgPath)).apply(context.req(), context.resp());
+                new RenderJSON(C.newMap("repoUrl", docUrlContext, "imgPath", imgPath)).apply(context.req(), context.resp());
                 return;
             }
             if (path.endsWith(".css")) {
@@ -82,6 +82,10 @@ public class DocEditor extends FastRequestHandler {
 
     @Override
     public String toString() {
+        return S.fmt("editor@[%s]", urlContext);
+    }
+
+    public String debug() {
         String appRoot = null == editorRoot ? "embedded" : editorRoot.getAbsolutePath();
 
         return S.fmt("editor\n\turlContext:%s\n\tjs app root:%s", urlContext, appRoot);
@@ -105,7 +109,7 @@ public class DocEditor extends FastRequestHandler {
             return this;
         }
 
-        public Builder docUrl(String url) {
+        public Builder repoUrl(String url) {
             editor.docUrlContext = url;
             return this;
         }

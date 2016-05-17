@@ -21,7 +21,7 @@
   </style>
   <input id="big-input" class="{show: show()}" autofocus>
   <script>
-    var show = false, self = this, type
+    var show = false, self = this, type, input
     this.show = function() {
       return show
     }
@@ -30,27 +30,62 @@
       type = false
       self.update()
     }
+    function createSelection(field, start, end) {
+      if( field.createTextRange ) {
+        var selRange = field.createTextRange();
+        selRange.collapse(true);
+        selRange.moveStart('character', start);
+        selRange.moveEnd('character', end);
+        selRange.select();
+        field.focus();
+      } else if( field.setSelectionRange ) {
+        field.focus();
+        field.setSelectionRange(start, end);
+      } else if( typeof field.selectionStart != 'undefined' ) {
+        field.selectionStart = start;
+        field.selectionEnd = end;
+        field.focus();
+      }
+    }
     RiotControl.on('ask-new-filename', function(filename) {
       show = true
-      type = 'filename'
+      type = 'new-filename'
+      document.getElementById('big-input').value = filename
+      self.update()
+    })
+    RiotControl.on('ask-rename', function(filename) {
+      show = true
+      type = 'rename'
       document.getElementById('big-input').value = filename
       self.update()
     })
     this.on('updated', function() {
-      var input = document.getElementById('big-input')
-      input.addEventListener('keydown', function(e) {
-        if (13 == e.keyCode) {
-          e.preventDefault()
-          RiotControl.trigger('big-input-entered', input.value, type)
-          hideMe()
-          return false
-        } else if (27 == e.keyCode) {
-          e.preventDefault()
-          RiotControl.trigger('big-input-canceled')
-          hideMe()
-          return false
+      if (!input) {
+        input = document.getElementById('big-input')
+        input.addEventListener('keydown', function(e) {
+          if (13 == e.keyCode) {
+            e.preventDefault()
+            RiotControl.trigger('big-input-entered', input.value, type)
+            hideMe()
+            return false
+          } else if (27 == e.keyCode) {
+            e.preventDefault()
+            RiotControl.trigger('big-input-canceled')
+            hideMe()
+            return false
+          }
+        })
+      }
+      if (show) {
+        input.focus()
+        if (type == 'new-filename') {
+          createSelection(input, 1, 9)
+        } else if (type == 'rename') {
+          var s = input.value
+          var start = s.lastIndexOf('/') + 1, end = s.length - 3
+          createSelection(input, start, end)
         }
-      })
+      }
     })
   </script>
 </big-input>

@@ -110,6 +110,10 @@ public class DocKit {
 
     @Override
     public String toString() {
+        return S.fmt("dockit@[%s]", urlContext);
+    }
+
+    public String debug() {
         return S.fmt("repo\n\turlContext:%s\n\timgUrlPath:%s\n\t%s\n\t%s", urlContext, imgPath, docRepo, imgRepo);
     }
 

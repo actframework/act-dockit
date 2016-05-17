@@ -1,13 +1,13 @@
 function Store() {
     riot.observable(this)
     var self = this
-    var _showNav = true, _docUrl, _imgUrl, _path, _list, _content
+    var _showNav = true, _repoUrl, _imgUrl, _path, _list, _content
     var setList = function(list) {
         _list = list
         self.trigger('list-updated')
     }
     var target = function() {
-        var load = _docUrl
+        var load = _repoUrl
         if (_path) {
             load = load + _path
         }
@@ -22,7 +22,7 @@ function Store() {
         }
         return false
     }
-    var loadDoc = function() {
+    var loadRepo = function() {
         $.get(target(), onRemoteListLoad)
     }
     var onRemoteListLoad = function(data) {
@@ -35,7 +35,7 @@ function Store() {
                 } else {
                     list.push({
                         'label': x.label ? x.label : x.path,
-                        'url': _docUrl + x.path,
+                        'url': _repoUrl + x.path,
                         'isFolder': x.isFolder
                     })
                 }
@@ -99,9 +99,9 @@ function Store() {
         self.trigger('content-loaded', content)
     })
     self.on('remote-config-loaded', function(config) {
-        _docUrl = config.docUrl
-        _imgUrl = _docUrl + config.imgPath
-        loadDoc()
+        _repoUrl = config.repoUrl
+        _imgUrl = _repoUrl + config.imgPath
+        loadRepo()
     })
     self.on('img-pasted', function(blob) {
         var reader = new FileReader()
@@ -113,11 +113,11 @@ function Store() {
         reader.readAsDataURL(blob);
     })
     self.on('big-input-entered', function(value, type) {
-        if ('filename' == type) {
+        if ('new-filename' == type) {
             _list.forEach(function(x) {delete x.current})
-            var url = _docUrl + value
+            var url = _repoUrl + value
             if (!value.startsWith('/')) {
-                url = _docUrl + '/' + value
+                url = _repoUrl + '/' + value
             }
             _list.push({
                 url: url,
@@ -127,16 +127,29 @@ function Store() {
             })
             _content = ''
             RiotControl.trigger('content-loaded', _content)
+        } else if ('rename' == type) {
+            _list.forEach(function(x) {
+                if (x.current) {
+                    if (x.label == value) return
+                    var url = _repoUrl + value
+                    if (!value.startsWith('/')) {
+                        url = _repoUrl + '/' + value
+                    }
+                    x.url = url
+                    x.label = value
+                }
+            })
+            RiotControl.trigger('list-updated')
         }
     })
 
     document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.metaKey) {
-            if (e.keyCode == 83) {
+            if (e.keyCode == 83) { // ctrl-s
                 e.preventDefault()
                 saveDoc()
                 return false
-            } else if (e.keyCode == 88 || e.keyCode == 77) {
+            } else if (e.keyCode == 77) { // ctrl-b
                 e.preventDefault()
                 var filename = '/new-file.md'
                 if (_path) {
@@ -145,6 +158,14 @@ function Store() {
                 saveDoc()
                 RiotControl.trigger('ask-new-filename', filename)
                 return false
+            } else if (e.keyCode == 113) { // ctr-f2
+                var doc = curDoc()
+                if (doc) {
+                    e.preventDefault()
+                    saveDoc()
+                    var filename = doc
+                    RiotControl.trigger('ask-rename', filename)
+                }
             }
         }
     });
