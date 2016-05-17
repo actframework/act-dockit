@@ -71,6 +71,14 @@ public class FsDocRepo implements DocRepo {
         IO.writeContent(content, file);
     }
 
+    @Override
+    public void delete(String path) {
+        File file = toFile(path);
+        if (file.isFile()) {
+            file.delete();
+        }
+    }
+
     private RepoElement fromFile(File file) {
         if (file.isDirectory()) {
             return new DocFolder(path(file));

@@ -40,4 +40,6 @@ public interface DocRepo {
     String read(String path);
 
     void persist(String path, String content);
+
+    void delete(String path);
 }

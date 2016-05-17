@@ -19,6 +19,10 @@ public class Application {
         logger = Logger.getLogger("org.xnio");
         logger.setLevel(Level.SEVERE);
 
+        if (args.length > 0) {
+            System.setProperty("repoRoot", args[0]);
+        }
+
         RunApp.start("dockit", "0.1.2", Application.class);
     }
 }

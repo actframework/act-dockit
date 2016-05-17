@@ -17,10 +17,14 @@ function Store() {
         if (!_list) return false
         for (var i = 0, j = _list.length; i < j; ++i) {
             if (_list[i].current) {
-                return _list[i].url
+                return _list[i]
             }
         }
         return false
+    }
+    var curDocUrl = function() {
+        var doc = curDoc()
+        return doc ? doc.url : false
     }
     var loadRepo = function() {
         $.get(target(), onRemoteListLoad)
@@ -51,12 +55,54 @@ function Store() {
         }
     }
     var saveDoc = function() {
-        var target = curDoc()
+        var target = curDocUrl()
         if (!target) {
             return
         }
         $.post(target, {content: _content}, function() {
             self.trigger('content-saved')
+        })
+    }
+    var deleteDoc = function() {
+        var target = curDocUrl()
+        if (!target) {
+            return
+        }
+        $.ajax({
+            url: target,
+            method: 'DELETE',
+            success: function() {
+                for (var i = 0; i < _list.length; ++i) {
+                    var doc = _list[i]
+                    if (doc.url == target) {
+                        _list.split(i, i+1)
+                        return
+                    }
+                }
+            }
+        })
+    }
+    var renameDoc = function(newName) {
+        var doc = curDoc()
+        if (!doc) {
+            return
+        }
+        _list.forEach(function(x) {
+            if (x.current) {
+                if (x.label == newName) return
+                var oldUrl = x.url
+                var url = newName
+                if (!newName.startsWith('/')) {
+                    url = _repoUrl + '/' + newName
+                }
+                x.url = url
+                x.label = newName
+                $.post(url, {content: _content}, function() {
+                    $.ajax({url: oldUrl, method:'DELETE'})
+                    self.trigger('content-saved')
+                    self.trigger('list-updated')
+                })
+            }
         })
     }
     self.displayNav = function() {
@@ -128,18 +174,7 @@ function Store() {
             _content = ''
             RiotControl.trigger('content-loaded', _content)
         } else if ('rename' == type) {
-            _list.forEach(function(x) {
-                if (x.current) {
-                    if (x.label == value) return
-                    var url = _repoUrl + value
-                    if (!value.startsWith('/')) {
-                        url = _repoUrl + '/' + value
-                    }
-                    x.url = url
-                    x.label = value
-                }
-            })
-            RiotControl.trigger('list-updated')
+            renameDoc(value)
         }
     })
 
@@ -159,7 +194,7 @@ function Store() {
                 RiotControl.trigger('ask-new-filename', filename)
                 return false
             } else if (e.keyCode == 113) { // ctr-f2
-                var doc = curDoc()
+                var doc = curDocUrl()
                 if (doc) {
                     e.preventDefault()
                     saveDoc()

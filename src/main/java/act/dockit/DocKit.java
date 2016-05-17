@@ -30,6 +30,18 @@ import java.util.Set;
 import static act.controller.Controller.Util.badRequestIfNot;
 import static act.controller.Controller.Util.notFoundIf;
 
+/*
+
+!!!IMPORTANT NOTE!!!
+
+Implementation of DocKit is NOT an example of how to
+write normal actframework application.
+
+PLEASE DO NOT FOLLOW THE CODE BELOW TO WRITE YOUR OWN APP
+
+Go to https://github.com/actframework/act-demo-apps for reference
+ */
+
 /**
  * Mount a {@link DocRepo} to a web application
  */
@@ -63,6 +75,7 @@ public class DocKit {
         Router router = App.instance().router(portName);
         router.addMapping(H.Method.GET, urlContext, new Getter());
         router.addMapping(H.Method.POST, urlContext, new Saver());
+        router.addMapping(H.Method.DELETE, urlContext, new Eraser());
     }
 
     void refreshImgUrl() {
@@ -177,6 +190,14 @@ public class DocKit {
             return "dockit:get:" + docRepo;
         }
 
+    }
+
+    private class Eraser extends ResourceHandlerBase {
+        @Override
+        protected Result _handle(String path, ActionContext context) {
+            docRepo.delete(path);
+            return Ok.INSTANCE;
+        }
     }
 
     private class Saver extends ResourceHandlerBase {

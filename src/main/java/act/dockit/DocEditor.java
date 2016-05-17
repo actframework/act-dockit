@@ -20,6 +20,18 @@ import static act.controller.Controller.Util.notFoundIfNot;
 import static act.controller.Controller.Util.notFoundIfNull;
 import static act.controller.Controller.Util.redirect;
 
+/*
+
+!!!IMPORTANT NOTE!!!
+
+Implementation of DocKit is NOT an example of how to
+write normal actframework application.
+
+PLEASE DO NOT FOLLOW THE CODE BELOW TO WRITE YOUR OWN APP
+
+Go to https://github.com/actframework/act-demo-apps for reference
+ */
+
 /**
  * Request handler for editor access
  */
