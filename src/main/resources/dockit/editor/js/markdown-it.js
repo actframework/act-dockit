@@ -1798,7 +1798,7 @@ default_rules.code_inline = function (tokens, idx /*, options, env */) {
 
 
 default_rules.code_block = function (tokens, idx /*, options, env */) {
-  return '<pre><code>' + escapeHtml(tokens[idx].content) + '</code></pre>\n';
+  return '<pre class="line-numbers"><code>' + escapeHtml(tokens[idx].content) + '</code></pre>\n';
 };
 
 
@@ -1818,7 +1818,7 @@ default_rules.fence = function (tokens, idx, options, env, self) {
     highlighted = escapeHtml(token.content);
   }
 
-  return  '<pre><code' + self.renderAttrs(token) + '>'
+  return  '<pre class="line-numbers"' + self.renderAttrs(token) + '><code' + self.renderAttrs(token) + '>'
         + highlighted
         + '</code></pre>\n';
 };

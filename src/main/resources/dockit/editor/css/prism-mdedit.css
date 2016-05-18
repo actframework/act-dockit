@@ -1,0 +1,137 @@
+/* http://prismjs.com/download.html?themes=prism&languages=markup+markdown */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+#code.mdedit code[class*="language-"],
+#code.mdedit pre[class*="language-"] {
+	color: black;
+	/*text-shadow: 0 1px white;*/
+	font-family: Consolas, Monaco, 'Andale Mono', monospace;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	/*************/ white-space: pre-wrap;
+	word-spacing: normal;
+	word-break: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+#code.mdedit pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+#code.mdedit code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+#code.mdedit pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+#code.mdedit code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+#code.mdedit @media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+#code.mdedit pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+#code.mdedit :not(pre) > code[class*="language-"],
+#code.mdedit pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+#code.mdedit :not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+}
+
+#code.mdedit .token.comment,
+#code.mdedit .token.prolog,
+#code.mdedit .token.doctype,
+#code.mdedit .token.cdata {
+	color: slategray;
+}
+
+#code.mdedit .token.punctuation {
+	color: #999;
+}
+
+#code.mdedit .namespace {
+	opacity: .7;
+}
+
+#code.mdedit .token.property,
+#code.mdedit .token.tag,
+#code.mdedit .token.boolean,
+#code.mdedit .token.number,
+#code.mdedit .token.constant,
+#code.mdedit .token.symbol,
+#code.mdedit .token.deleted {
+	color: #905;
+}
+
+#code.mdedit .token.selector,
+#code.mdedit .token.attr-name,
+#code.mdedit .token.string,
+#code.mdedit .token.char,
+#code.mdedit .token.builtin,
+#code.mdedit .token.inserted {
+	color: #690;
+}
+
+#code.mdedit .token.operator,
+#code.mdedit .token.entity,
+#code.mdedit .token.url,
+#code.mdedit .language-css .token.string,
+#code.mdedit .style .token.string {
+	color: #a67f59;
+	background: hsla(0, 0%, 100%, .5);
+}
+
+#code.mdedit .token.atrule,
+#code.mdedit .token.attr-value,
+#code.mdedit .token.keyword {
+	color: #07a;
+}
+
+#code.mdedit .token.function {
+	color: #DD4A68;
+}
+
+#code.mdedit .token.regex,
+#code.mdedit .token.important,
+#code.mdedit .token.variable {
+	color: #e90;
+}
+
+#code.mdedit .token.important,
+#code.mdedit .token.bold {
+	font-weight: bold;
+}
+#code.mdedit .token.italic {
+	font-style: italic;
+}
+
+#code.mdedit .token.entity {
+	cursor: help;
+}
