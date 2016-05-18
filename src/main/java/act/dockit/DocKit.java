@@ -180,6 +180,7 @@ public class DocKit {
                     result = new RenderText(source);
                 }
             } else {
+                logger.warn("Resource not found by path: %s", path);
                 result = NotFound.INSTANCE;
             }
             return result;
