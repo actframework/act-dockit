@@ -169,8 +169,8 @@ public class DocKit {
                 });
                 if (S.notBlank(path)) {
                     list.prepend(C.map("path", S.beforeLast(path, "/"), "isFolder", true, "label", ".."));
-                    list.prepend(C.map("path", path, "isFolder", true, "label", "."));
                 }
+                list.prepend(C.map("path", path, "isFolder", true, "label", "."));
                 result = new RenderJSON(JSON.toJSONString(list));
             } else if (isSource(path)) {
                 String source = docRepo.read(path);
