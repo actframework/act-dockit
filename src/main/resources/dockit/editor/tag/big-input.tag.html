@@ -78,9 +78,7 @@
       }
       if (show) {
         input.focus()
-        if (type == 'new-filename') {
-          createSelection(input, 1, 9)
-        } else if (type == 'rename') {
+        if (type == 'new-filename' || type == 'rename') {
           var s = input.value
           var start = s.lastIndexOf('/') + 1, end = s.length - 3
           createSelection(input, start, end)

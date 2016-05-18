@@ -1,10 +1,7 @@
 package act.dockit;
 
 import org.osgl.$;
-import org.osgl.util.C;
-import org.osgl.util.E;
-import org.osgl.util.IO;
-import org.osgl.util.S;
+import org.osgl.util.*;
 
 import java.io.File;
 import java.util.List;
@@ -20,7 +17,7 @@ public class FsDocRepo implements DocRepo {
     public FsDocRepo(File root) {
         E.illegalArgumentIf(!root.isDirectory());
         this.root = root.getAbsoluteFile();
-        this.rootPath = this.root.getPath();
+        this.rootPath = this.calibaratePath(this.root.getPath());
     }
 
     @Override
@@ -98,8 +95,15 @@ public class FsDocRepo implements DocRepo {
     }
 
     private String path(File file) {
-        String path = file.getAbsolutePath();
+        String path = calibaratePath(file.getAbsolutePath());
         return S.after(path, rootPath);
+    }
+
+    private String calibaratePath(String path) {
+        if (OS.get() == OS.WINDOWS) {
+            return path.replace('\\', '/');
+        }
+        return path;
     }
 
     @Override
