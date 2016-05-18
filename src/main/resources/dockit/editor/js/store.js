@@ -201,6 +201,8 @@ function Store() {
                     var filename = doc
                     RiotControl.trigger('ask-rename', filename)
                 }
+            } else if (e.keyCode == 49) { // ctrl-1
+                self.trigger('toggle-nav')
             }
         }
     });
