@@ -859,13 +859,13 @@ Editor.prototype.keyup = function(evt){
     return;
   }
 
-  if([
-    33, 34, // PgUp, PgDn
-    35, 36, // End, Home
-    37, 39, 38, 40 // Left, Right, Up, Down
-  ].indexOf(keyCode) === -1) {
-    this.changed();
-  }
+  //if([
+  //  33, 34, // PgUp, PgDn
+  //  35, 36, // End, Home
+  //  37, 39, 38, 40 // Left, Right, Up, Down
+  //].indexOf(keyCode) === -1) {
+  //  this.changed();
+  //}
 };
 
 Editor.prototype.changed = function(evt){
