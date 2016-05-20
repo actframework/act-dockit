@@ -50,8 +50,10 @@ public class BootDocKit {
         int port = act.app.App.instance().config().httpPort();
         System.out.printf("\nDocKit is running on port: %s\n", port);
         System.out.printf("\n%s\n\n%s\n", docKit.debug(), docEditor.debug());
-        System.out.println("\nDocKit is powered by \n\t* [actframework](http://github.com/actframework)");
-        System.out.println("\t* [mdEdit](https://jbt.github.io/markdown-editor/)");
+        System.out.println("\nDocKit is powered by");
+        System.out.println("\t* [actframework](http://github.com/actframework)");
+        System.out.println("\t* [mdEdit](https://github.com/jbt/mdEdit)");
+        System.out.println("\t* [Prism](https://github.com/PrismJS/prism)");
         System.out.println("\t* [markdownit](https://github.com/markdown-it/markdown-it)\n");
     }
 
