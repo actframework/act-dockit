@@ -43,14 +43,14 @@
     })
 
     RiotControl.on('img-pasted', function () {
-      editor.insert('uploading ...')
+      editor.paste('uploading ...')
     })
 
     RiotControl.on('img-uploaded', function(url) {
       var paste = '![image](' + url + ')'
       var start = editor.selMgr.getStart()
       editor.selMgr.setRange(start - 'uploading ...'.length, start)
-      editor.insert(paste)
+      editor.paste(paste)
     })
 
     RiotControl.on('content-loaded', function(content) {
