@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static act.controller.Controller.Util.badRequestIfNot;
 import static act.controller.Controller.Util.notFoundIf;
@@ -47,7 +48,10 @@ Go to https://github.com/actframework/act-demo-apps for reference
  */
 public class DocKit {
 
+    public static final int COOLING_TIME_IN_SECONDS = 60 * 60;
+
     private static Logger logger = LogManager.get(DocKit.class);
+    private static Map<String, DocKit> instances = C.newMap();
 
     DocRepo docRepo;
     ImgRepo imgRepo;
@@ -58,7 +62,7 @@ public class DocKit {
     Set<String> suffixies = C.set();
     private Set<String> sourceIndexes = C.newSet();
     private Set<String> folderIndexes = C.newSet();
-    private IdGenerator idGenerator = new IdGenerator(".img.id.do-not-delete");
+    private IdGenerator idGenerator = new IdGenerator(".img.id.do.not.delete");
 
     DocKit() {
         refreshImgUrl();
@@ -67,8 +71,15 @@ public class DocKit {
             public void run() {
                 buildIndex();
                 registerToRouter();
+                instances.put(id(), DocKit.this);
             }
         });
+        Act.jobManager().every("clean-orphan-img", new Runnable() {
+            @Override
+            public void run() {
+                removeOrphanImages();
+            }
+        }, COOLING_TIME_IN_SECONDS, TimeUnit.SECONDS);
     }
 
     private void registerToRouter() {
@@ -121,6 +132,14 @@ public class DocKit {
         }
     }
 
+    public String id() {
+        StringBuilder sb = S.builder(this.urlContext);
+        if (S.notBlank(portName)) {
+            sb.append(':').append(portName);
+        }
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         return S.fmt("dockit@[%s]", urlContext);
@@ -128,6 +147,63 @@ public class DocKit {
 
     public String debug() {
         return S.fmt("repo\n\turlContext:%s\n\timgUrlPath:%s\n\t%s\n\t%s", urlContext, imgPath, docRepo, imgRepo);
+    }
+
+    public void removeOrphanImages() {
+        logger.info("cleaning orphan images ...");
+        List<String> orphanImages = findOrphanImages();
+        for (String path : orphanImages) {
+            imgRepo.remove(path);
+        }
+    }
+
+    public List<String> findOrphanImages() {
+        List<String> allImagePaths = imgRepo.list(COOLING_TIME_IN_SECONDS);
+        Set<String> orphanImagePaths = C.newSet();
+        for (String path : allImagePaths) {
+            String imgName = S.afterLast(path, "/");
+            if (!searchText(imgName)) {
+                logger.info("found orphan image: %s", path);
+                orphanImagePaths.add(path);
+            }
+        }
+        return C.list(orphanImagePaths);
+    }
+
+    private boolean searchText(String string) {
+        DocFolder root = docRepo.root();
+        return searchText(root, string);
+    }
+
+    private boolean searchText(RepoElement doc, String search) {
+        if (doc.isFolder()) {
+            List<RepoElement> list = docRepo.list(doc.path());
+            for (RepoElement element: list) {
+                if (searchText(element, search)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            String s = docRepo.read(doc.path());
+            return s.contains(search);
+        }
+    }
+
+    public static DocKit instance(String key) {
+        if (S.blank(key)) {
+            return instance();
+        }
+        return instances.get(key);
+    }
+
+    public static DocKit instance() {
+        E.illegalStateIf(instances.size() != 1);
+        return instances.values().iterator().next();
+    }
+
+    public static List<DocKit> instances() {
+        return C.list(instances.values());
     }
 
     private class Getter extends ResourceHandlerBase {
@@ -272,6 +348,5 @@ public class DocKit {
             return docKit;
         }
     }
-
 
 }

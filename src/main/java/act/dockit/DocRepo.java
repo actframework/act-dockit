@@ -33,6 +33,18 @@ public interface DocRepo {
     List<RepoElement> list(String path);
 
     /**
+     * List immediate {@link RepoElement elements} contained in a folder
+     * that are modified before cooling time specified
+     *
+     * Note this does not return elements contained in sub folders
+     *
+     * @param path specify a folder
+     * @param coolingTimeInSecond specify the file cooling time in seconds
+     * @return a list of elements contained in the folder
+     */
+    List<RepoElement> list(String path, int coolingTimeInSecond);
+
+    /**
      * Read a doc source
      * @param path specify the doc source in the repo
      * @return a {@link Reader} to access the source

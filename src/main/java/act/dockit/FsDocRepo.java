@@ -4,6 +4,7 @@ import org.osgl.$;
 import org.osgl.util.*;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.List;
 
 /**
@@ -46,8 +47,21 @@ public class FsDocRepo implements DocRepo {
 
     @Override
     public List<RepoElement> list(String path) {
+        return list(path, 0);
+    }
+
+    @Override
+    public List<RepoElement> list(String path, final int coolingTimeInSecond) {
         File dir = toFile(path);
-        File[] fa = dir.listFiles();
+        File[] fa = dir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return ($.ms() - file.lastModified()) > coolingTimeInSecond * 1000;
+            }
+        });
+        if (null == fa) {
+            return C.list();
+        }
         List<RepoElement> list = C.newList();
         for (File file : fa) {
             list.add(fromFile(file));
