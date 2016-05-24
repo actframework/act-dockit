@@ -6,6 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Application {
+
+    private static Logger logger;
+
     public static void main(String[] args) throws Exception {
         logger = Logger.getLogger("act.dockit");
         logger.setLevel(Level.INFO);

@@ -26,6 +26,10 @@
       padding-left: 34px;
     }
 
+    #out pre code {
+      color: #ddd;
+    }
+
     .emoji {
       width: 1em;
       height: 1em;
@@ -52,7 +56,7 @@
         if (!lang) {
           lang = 'none';
         }
-        if (lang && Prism.languages[lang]) {
+        if (lang) {
           var codeElement = document.createElement("code");
           codeElement.innerHTML = code;
           codeElement.className = 'language-' + lang + ' line-numbers';
