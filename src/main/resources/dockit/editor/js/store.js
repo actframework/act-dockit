@@ -204,7 +204,7 @@ function Store() {
           var filename = doc
           RiotControl.trigger(EVENT.ASK_RENAME, filename)
         }
-      } else if (e.keyCode == 49) { // ctrl-1
+      } else if (e.keyCode == 49) { // ctrl-alt-1
         self.trigger(EVENT.TOGGLE_NAV)
       }
     }
