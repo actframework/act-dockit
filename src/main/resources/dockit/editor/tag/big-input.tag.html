@@ -47,13 +47,13 @@
         field.focus();
       }
     }
-    RiotControl.on('ask-new-filename', function(filename) {
+    RiotControl.on(EVENT.ASK_NEW_FILENAME, function(filename) {
       show = true
       type = 'new-filename'
       document.getElementById('big-input').value = filename
       self.update()
     })
-    RiotControl.on('ask-rename', function(filename) {
+    RiotControl.on(EVENT.ASK_RENAME, function(filename) {
       show = true
       type = 'rename'
       document.getElementById('big-input').value = filename
@@ -65,12 +65,12 @@
         input.addEventListener('keydown', function(e) {
           if (13 == e.keyCode) {
             e.preventDefault()
-            RiotControl.trigger('big-input-entered', input.value, type)
+            RiotControl.trigger(EVENT.BIG_INPUT_ENTERED, input.value, type)
             hideMe()
             return false
           } else if (27 == e.keyCode) {
             e.preventDefault()
-            RiotControl.trigger('big-input-canceled')
+            RiotControl.trigger(EVENT.BIG_INPUT_CANCELED)
             hideMe()
             return false
           }

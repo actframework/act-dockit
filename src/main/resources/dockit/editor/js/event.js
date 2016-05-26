@@ -1,0 +1,21 @@
+var EVENT = {
+	TOGGLE_NAV: 'toggle-nav',
+	TOGGLE_OVERLAY: 'toggle-overlay',
+	NAV_TOGGLED: 'nav-toggled',
+	LOAD_DOC: 'load-doc',
+	EDITOR_UPDATED: 'editor-updated',
+	CONTENT_LOADED: 'content-loaded',
+	CONTENT_UPDATED: 'content-updated',
+	CONTENT_SAVED: 'content-saved',
+	REMOTE_CONTENT_LOADED: 'remote-content-loaded',
+	REMOTE_CONFIG_LOADED: 'remote-config-loaded',
+	LIST_UPDATED: 'list-updated',
+	IMG_PASTED: 'img-pasted',
+	IMG_UPLOADED: 'img-uploaded',
+	BIG_INPUT_ENTERED: 'big-input-entered',
+	BIG_INPUT_CANCELED: 'big-input-canceled',
+	ASK_NEW_FILENAME: 'ask-new-filename',
+	ASK_RENAME: 'ask-rename',
+	SHOW_HELP: 'show_help',
+	HIDE_HELP: 'hide_help'
+};

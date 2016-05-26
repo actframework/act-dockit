@@ -1,13 +1,19 @@
 <nav>
   <style>
-    #close-nav {
+    #close-nav, #show-help {
       position: absolute;
-      top: 8px;
       right: 8px;
     }
-    #close-nav:hover {
+    #close-nav:hover, #show-help:hover {
       color: #fff;
       cursor: pointer;
+    }
+    #close-nav {
+      top: 8px;
+    }
+
+    #show-help {
+      bottom: 8px;
     }
 
     #nav {
@@ -68,12 +74,16 @@
           </a>
         </li>
       </ul>
+      <i class="fa fa-question" aria-hidden="true" id="show-help" onclick={showHelp}></i>
     </virtual>
   </div>
   <script>
     var self = this
     self.toggleNav = function () {
-      RiotControl.trigger('toggle-nav')
+      RiotControl.trigger(EVENT.TOGGLE_NAV)
+    }
+    self.showHelp = function () {
+      RiotControl.trigger(EVENT.SHOW_HELP);
     }
     self.width = function () {
       return window.appStore.displayNav() ? '400px' : '10px'
@@ -83,7 +93,7 @@
     }
     self.load = function (e) {
       e.stopImmediatePropagation()
-      RiotControl.trigger('load-doc', e.item.item)
+      RiotControl.trigger(EVENT.LOAD_DOC, e.item.item)
       return false
     }
     self.on('updated', function() {
@@ -95,7 +105,7 @@
         nav.removeEventListener('click', self.toggleNav)
       }
     })
-    RiotControl.on('list-updated content-loaded', function () {
+    RiotControl.on([EVENT.LIST_UPDATED, EVENT.CONTENT_LOADED], function (e) {
       self.update();
     })
   </script>

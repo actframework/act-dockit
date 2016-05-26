@@ -12,7 +12,11 @@ var RiotControl = {
     RiotControl[api] = function() {
         var args = [].slice.call(arguments);
         this._stores.forEach(function(el){
+            if( Object.prototype.toString.call( args[0] ) === '[object Array]' ) {
+                args[0] = args[0].join(' ');
+            }
             el[api].apply(el, args);
+
         });
     };
 });

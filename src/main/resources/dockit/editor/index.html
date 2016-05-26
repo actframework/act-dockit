@@ -19,6 +19,7 @@
 <app></app>
 <big-input></big-input>
 <overlay></overlay>
+<help></help>
 <script type="riot/tag" src="tag/app.tag.html"></script>
 <script type="riot/tag" src="tag/nav.tag.html"></script>
 <script type="riot/tag" src="tag/editor.tag.html"></script>
@@ -26,6 +27,8 @@
 <script type="riot/tag" src="tag/paste-catcher.tag.html"></script>
 <script type="riot/tag" src="tag/overlay.tag.html"></script>
 <script type="riot/tag" src="tag/big-input.tag.html"></script>
+<script type="riot/tag" src="tag/help.tag.html"></script>
+<script src="js/event.js"></script>
 <script src="js/store.js"></script>
 <script src="js/riot.min.js"></script>
 <script src="js/riot-control.js"></script>
@@ -35,7 +38,7 @@
   riot.mount('*')
   window.appStore = store;
   $.get("config", function(config) {
-    RiotControl.trigger('remote-config-loaded', config);
+    RiotControl.trigger(EVENT.REMOTE_CONFIG_LOADED, config);
   })
 </script>
 </body>

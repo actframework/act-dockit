@@ -1,0 +1,80 @@
+<help>
+  <style>
+    #help {
+      display: none;
+      position: fixed;
+      border-radius: 5px;
+      top: 100px;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      margin-left: -200px;
+      z-index: 9999;
+      background-color: #fff;
+      border: solid 1px #707070;
+      box-shadow: 0 0 5px 1px #969696;
+      font-family: arial;
+      padding-top: 35px;
+    }
+    #help.show {
+      display: block
+    }
+
+    #close-help {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      cursor: pointer;
+      font-size: 22px;
+    }
+    #close-help:hover {
+      color: #666;
+    }
+
+    #help .help-title {
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #help ul {
+      padding: 0 36px;
+      overflow-y: auto;  
+      height: 346px;    
+    }
+    #help ul li{
+      margin: 5px 0 5px 20px;
+    }
+  </style>
+  <div id="help" class="{show: show()}" autofocus>
+    <i class="fa fa-times" id="close-help" aria-hidden="true" onclick={closeHelp}></i>
+    <div class="help-title">Shortcuts</div>
+    <ul>
+      <li>Ctrl-s: save document.</li>
+      <li>Ctrl-m: new document.</li>
+      <li>Ctrl-f2: rename document.</li>
+      <li>Ctrl-alt-1: toggle navigation.</li>
+    </ul>
+  </div>
+  <script>
+    var show = false, self = this;
+
+    this.show = function() {
+      return show;
+    }
+
+    this.closeHelp = function() {
+      RiotControl.trigger(EVENT.HIDE_HELP);
+    }
+
+    RiotControl.on(EVENT.SHOW_HELP, function() {
+      show = true;
+      self.update();
+    })
+
+    RiotControl.on(EVENT.HIDE_HELP, function() {
+      show = false;
+      self.update();
+    })
+  </script>
+</help>

@@ -22,19 +22,19 @@
   <script>
     var show = false, self = this
     self.show = function() {
-      return show
+      return show;
     }
-    RiotControl.on('toggle-overlay', function() {
-      show = !show
-      self.update()
+    RiotControl.on(EVENT.TOGGLE_OVERLAY, function() {
+      show = !show;
+      self.update();
     })
-    RiotControl.on('ask-new-filename ask-rename', function() {
-      show = true
-      self.update()
+    RiotControl.on([EVENT.ASK_NEW_FILENAME, EVENT.ASK_RENAME, EVENT.SHOW_HELP], function() {
+      show = true;
+      self.update();
     })
-    RiotControl.on('big-input-entered big-input-canceled', function() {
-      show = false
-      self.update()
+    RiotControl.on([EVENT.BIG_INPUT_ENTERED, EVENT.BIG_INPUT_CANCELED, EVENT.HIDE_HELP], function() {
+      show = false;
+      self.update();
     })
   </script>
 </overlay>

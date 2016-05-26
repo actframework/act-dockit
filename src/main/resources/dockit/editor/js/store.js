@@ -4,7 +4,7 @@ function Store() {
   var _showNav = true, _repoUrl, _imgUrl, _path, _list, _content
   var setList = function (list) {
     _list = list
-    self.trigger('list-updated')
+    self.trigger(EVENT.LIST_UPDATED)
   }
   var target = function () {
     var load = _repoUrl
@@ -49,7 +49,7 @@ function Store() {
     for (var i = 0, j = list.length; i < j; ++i) {
       var x = list[i]
       if (!x.isFolder) {
-        RiotControl.trigger('load-doc', x)
+        RiotControl.trigger(EVENT.LOAD_DOC, x)
         return
       }
     }
@@ -60,7 +60,7 @@ function Store() {
       return
     }
     $.post(target, {content: _content}, function () {
-      self.trigger('content-saved')
+      self.trigger(EVENT.CONTENT_SAVED)
     })
   }
   var deleteDoc = function () {
@@ -99,8 +99,8 @@ function Store() {
         x.label = newName
         $.post(url, {content: _content}, function () {
           $.ajax({url: oldUrl, method: 'DELETE'})
-          self.trigger('content-saved')
-          self.trigger('list-updated')
+          self.trigger(EVENT.CONTENT_SAVED)
+          self.trigger(EVENT.LIST_UPDATED)
         })
       }
     })
@@ -114,27 +114,27 @@ function Store() {
   self.getContent = function () {
     return _content
   }
-  self.on('toggle-nav', function () {
+  self.on(EVENT.TOGGLE_NAV, function () {
     _showNav = !_showNav;
-    self.trigger('nav-toggled')
+    self.trigger(EVENT.NAV_TOGGLED)
   })
-  self.on('load-doc', function (item) {
+  self.on(EVENT.LOAD_DOC, function (item) {
     saveDoc()
     var url = item.url
     if (item.isFolder) {
       $.get(url, onRemoteListLoad)
     } else if (url.endsWith('.md')) {
       $.get(url, function (content) {
-        RiotControl.trigger('remote-content-loaded', content, item)
+        RiotControl.trigger(EVENT.REMOTE_CONTENT_LOADED, content, item)
       })
     }
   })
-  self.on('editor-updated', function (content) {
+  self.on(EVENT.EDITOR_UPDATED, function (content) {
     _content = content
-    self.trigger('content-updated', content)
+    self.trigger(EVENT.CONTENT_UPDATED, content)
     saveDoc()
   })
-  self.on('remote-content-loaded', function (content, item) {
+  self.on(EVENT.REMOTE_CONTENT_LOADED, function (content, item) {
     _content = content;
     _list.forEach(function (element) {
       if (element == item) {
@@ -143,23 +143,23 @@ function Store() {
         delete element.current
       }
     })
-    self.trigger('content-loaded', content)
+    self.trigger(EVENT.CONTENT_LOADED, content)
   })
-  self.on('remote-config-loaded', function (config) {
+  self.on(EVENT.REMOTE_CONFIG_LOADED, function (config) {
     _repoUrl = config.repoUrl
     _imgUrl = _repoUrl + config.imgPath
     loadRepo()
   })
-  self.on('img-pasted', function (blob) {
+  self.on(EVENT.IMG_PASTED, function (blob) {
     var reader = new FileReader()
     reader.onload = function (e) {
       $.post(_imgUrl, {data: e.target.result}, function (data) {
-        self.trigger('img-uploaded', data.url);
+        self.trigger(EVENT.IMG_UPLOADED, data.url);
       })
     }
     reader.readAsDataURL(blob);
   })
-  self.on('big-input-entered', function (value, type) {
+  self.on(EVENT.BIG_INPUT_ENTERED, function (value, type) {
     if ('new-filename' == type) {
       _list.forEach(function (x) {
         delete x.current
@@ -175,7 +175,7 @@ function Store() {
         current: true
       })
       _content = ''
-      RiotControl.trigger('content-loaded', _content)
+      RiotControl.trigger(EVENT.CONTENT_LOADED, _content)
     } else if ('rename' == type) {
       renameDoc(value)
     }
@@ -187,14 +187,14 @@ function Store() {
         e.preventDefault()
         saveDoc()
         return false
-      } else if (e.keyCode == 77) { // ctrl-b
+      } else if (e.keyCode == 77) { // ctrl-m
         e.preventDefault()
         var filename = '/new-file.md'
         if (_path) {
           filename = _path + filename
         }
         saveDoc()
-        RiotControl.trigger('ask-new-filename', filename)
+        RiotControl.trigger(EVENT.ASK_NEW_FILENAME, filename)
         return false
       } else if (e.keyCode == 113) { // ctr-f2
         var doc = curDocUrl()
@@ -202,10 +202,10 @@ function Store() {
           e.preventDefault()
           saveDoc()
           var filename = doc
-          RiotControl.trigger('ask-rename', filename)
+          RiotControl.trigger(EVENT.ASK_RENAME, filename)
         }
       } else if (e.keyCode == 49) { // ctrl-1
-        self.trigger('toggle-nav')
+        self.trigger(EVENT.TOGGLE_NAV)
       }
     }
   });

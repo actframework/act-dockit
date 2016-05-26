@@ -97,7 +97,7 @@
       }
     }
 
-    RiotControl.on('content-loaded content-updated', function(e, content) {
+    RiotControl.on([EVENT.CONTENT_LOADED, EVENT.CONTENT_UPDATED], function(e, content) {
       setOutput(content)
     })
   </script>

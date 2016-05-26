@@ -34,7 +34,7 @@
       if (dock && !editor) {
         editor = mdEdit(document.getElementById('code'), {
           change: function(content) {
-            RiotControl.trigger('editor-updated', content)
+            RiotControl.trigger(EVENT.EDITOR_UPDATED, content)
           }
         })
         var len = editor.el.innerText.length
@@ -42,18 +42,18 @@
       }
     })
 
-    RiotControl.on('img-pasted', function () {
+    RiotControl.on(EVENT.IMG_PASTED, function () {
       editor.paste('uploading ...')
     })
 
-    RiotControl.on('img-uploaded', function(url) {
+    RiotControl.on(EVENT.IMG_UPLOADED, function(url) {
       var paste = '![image](' + url + ')'
       var start = editor.selMgr.getStart()
       editor.selMgr.setRange(start - 'uploading ...'.length, start)
       editor.paste(paste)
     })
 
-    RiotControl.on('content-loaded', function(content) {
+    RiotControl.on(EVENT.CONTENT_LOADED, function(content) {
       self.update()
       setTimeout(function() {
         editor.setValue(content)
