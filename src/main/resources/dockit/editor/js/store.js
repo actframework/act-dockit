@@ -232,6 +232,9 @@ function Store() {
       console.log("routing " + path);
       RiotControl.trigger('load-doc', path);
     });
+    setTimeout(function() {
+      riot.route.start(true);
+    }, 1)
     loadRepo()
   })
   self.on('mark-delete', function (item) {

@@ -2,18 +2,21 @@
 <html>
 <head>
   <title>Markdown Editor</title>
-  <script src="js/markdown-it.js"></script>
-  <script src="js/markdown-it-footnote.js"></script>
-  <script src="js/emojify.js" charset="utf-8"></script>
-  <script src="js/prism.js" charset="utf-8"></script>
-  <script src="js/mdedit.js"></script>
-  <script src="js/jquery.min.js"></script>
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="css/prism.css">
   <link rel="stylesheet" href="css/prism-mdedit.css">
   <link rel="stylesheet" href="css/prism-line-numbers.css">
   <link rel="stylesheet" href="css/mdedit.css">
   <link rel="stylesheet" href="css/app.css">
+  <script src="js/markdown-it.js"></script>
+  <script src="js/markdown-it-footnote.js"></script>
+  <script src="js/emojify.js" charset="utf-8"></script>
+  <script src="js/prism.js" charset="utf-8"></script>
+  <script src="js/mdedit.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/riot.min.js"></script>
+  <script src="js/riot-control.js"></script>
 </head>
 <body>
 <app></app>
@@ -26,24 +29,22 @@
 <script type="riot/tag" src="tag/paste-catcher.tag.html"></script>
 <script type="riot/tag" src="tag/overlay.tag.html"></script>
 <script type="riot/tag" src="tag/big-input.tag.html"></script>
-<script src="js/store.js"></script>
-<script src="js/riot.min.js"></script>
-<script src="js/riot-control.js"></script>
 <script>
-  var store = new Store();
-  RiotControl.addStore(store);
-  riot.mount('*')
-  window.appStore = store;
-  $.get("config", function(config) {
-    RiotControl.trigger('remote-config-loaded', config);
-  })
-  riot.route.parser(null, function(path, filter) {
-    var re = new RegExp('^' + filter.replace(/\*/g, '([^/?#]+?)').replace(/\.\./, '.*') + '$'),
-        args = path.match(re)
+  $(function() {
+    var store = new Store();
+    RiotControl.addStore(store);
+    riot.mount('*')
+    window.appStore = store;
+    $.get("config", function(config) {
+      RiotControl.trigger('remote-config-loaded', config);
+    })
+    riot.route.parser(null, function(path, filter) {
+      var re = new RegExp('^' + filter.replace(/\*/g, '([^/?#]+?)').replace(/\.\./, '.*') + '$'),
+          args = path.match(re)
 
-    if (args) return args[0]
+      if (args) return args[0]
+    })
   })
-  riot.route.start(true);
 </script>
 </body>
 </html>
