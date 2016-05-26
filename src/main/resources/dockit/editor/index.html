@@ -37,6 +37,13 @@
   $.get("config", function(config) {
     RiotControl.trigger('remote-config-loaded', config);
   })
+  riot.route.parser(null, function(path, filter) {
+    var re = new RegExp('^' + filter.replace(/\*/g, '([^/?#]+?)').replace(/\.\./, '.*') + '$'),
+        args = path.match(re)
+
+    if (args) return args[0]
+  })
+  riot.route.start(true);
 </script>
 </body>
 </html>

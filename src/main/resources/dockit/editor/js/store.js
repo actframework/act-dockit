@@ -1,7 +1,7 @@
 function Store() {
   riot.observable(this)
   var self = this
-  var _showNav = true, _repoUrl, _imgUrl, _path, _list, _content
+  var _showNav = true, _repoUrl, _imgUrl, _path, _list, _content, _loading, _docUrl
   var setList = function (list) {
     _list = list
     self.trigger('list-updated')
@@ -26,6 +26,18 @@ function Store() {
     var doc = curDoc()
     return doc ? doc.url : false
   }
+  var folderUrl = function(path) {
+    if (!path) return false
+    if (typeof path == 'object') {
+      path = path.url;
+    }
+    path = path.substr(_repoUrl.length);
+    var n = path.lastIndexOf('/');
+    if (n > -1) {
+      path = path.substr(0, n);
+    }
+    return path;
+  }
   var loadRepo = function () {
     $.get(target(), onRemoteListLoad)
   }
@@ -46,13 +58,39 @@ function Store() {
       }
     }
     setList(list)
+    refreshCurrent(null);
+    var curFolderUrl = folderUrl(curDocUrl());
     for (var i = 0, j = list.length; i < j; ++i) {
       var x = list[i]
       if (!x.isFolder) {
-        RiotControl.trigger('load-doc', x)
+        if (curFolderUrl !== folderUrl(x.url)) {
+          RiotControl.trigger('load-doc', x)
+        }
         return
       }
     }
+  }
+  var refreshCurrent = function(item) {
+    if (item) {
+      var url = item;
+      if (typeof item === 'object') {
+        url = item.url;
+      }
+      if (_docUrl === url) {
+        return;
+      }
+      _docUrl = url;
+    } else {
+      item = _docUrl;
+    }
+    _list.forEach(function (element) {
+      if (element === item || element.url === item) {
+        element.current = true
+      } else {
+        delete element.current
+      }
+    })
+    RiotControl.trigger('list-updated');
   }
   var saveDoc = function () {
     var target = curDocUrl()
@@ -119,15 +157,26 @@ function Store() {
     self.trigger('nav-toggled')
   })
   self.on('load-doc', function (item) {
-    saveDoc()
-    var url = item.url
-    if (item.isFolder) {
-      $.get(url, onRemoteListLoad)
-    } else if (url.endsWith('.md')) {
-      $.get(url, function (content) {
-        RiotControl.trigger('remote-content-loaded', content, item)
-      })
+    if (_loading) {
+      return;
     }
+    _loading = true;
+    saveDoc()
+    var url = item;
+    if (typeof item == 'object') {
+      url = item.url
+    }
+    if (!url.startsWith(_repoUrl)) {
+      url = _repoUrl + url;
+    }
+    $.get(url, function(data) {
+      if (typeof data == 'string') {
+        RiotControl.trigger('remote-content-loaded', data, item)
+      } else {
+        onRemoteListLoad(data);
+      }
+      _loading = false;
+    })
   })
   self.on('editor-updated', function (content) {
     _content = content
@@ -136,19 +185,27 @@ function Store() {
   })
   self.on('remote-content-loaded', function (content, item) {
     _content = content;
-    _list.forEach(function (element) {
-      if (element == item) {
-        element.current = true
-      } else {
-        delete element.current
-      }
-    })
+    refreshCurrent(item);
+    var itemFolder = folderUrl(item);
+    if (itemFolder != _path) {
+      setTimeout(function(){
+        RiotControl.trigger('load-doc', itemFolder);
+      }, 1);
+    }
     self.trigger('content-loaded', content)
   })
   self.on('remote-config-loaded', function (config) {
     _repoUrl = config.repoUrl
     _imgUrl = _repoUrl + config.imgPath
+    riot.route(_repoUrl + '..', function(path) {
+      path = '/' + path;
+      console.log("routing " + path);
+      RiotControl.trigger('load-doc', path);
+    });
     loadRepo()
+  })
+  self.on('restore', function(path) {
+    
   })
   self.on('img-pasted', function (blob) {
     var reader = new FileReader()
@@ -209,4 +266,6 @@ function Store() {
       }
     }
   });
+
 }
+
