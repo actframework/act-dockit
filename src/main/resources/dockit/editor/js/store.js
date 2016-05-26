@@ -4,7 +4,26 @@ function Store() {
   var _showNav = true, _repoUrl, _imgUrl, _path, _list, _content, _loading, _docUrl
   var setList = function (list) {
     _list = list
+    sortList()
     self.trigger('list-updated')
+  }
+  var sortList = function() {
+    _list.sort(function(a, b) {
+      if (a.isFolder && b.isFolder) {
+        if (a.label === '..') {
+          return -1
+        } else if (b.label === '..') {
+          return 1;
+        }
+        return a.url < b.url;
+      } else if (a.isFolder) {
+        return -1;
+      } else if (b.isFolder) {
+        return 1;
+      } else {
+        return a.url >= b.url;
+      }
+    })
   }
   var target = function () {
     var load = _repoUrl
@@ -59,14 +78,18 @@ function Store() {
     }
     setList(list)
     refreshCurrent(null);
-    var curFolderUrl = folderUrl(curDocUrl());
-    for (var i = 0, j = list.length; i < j; ++i) {
-      var x = list[i]
-      if (!x.isFolder) {
-        if (curFolderUrl !== folderUrl(x.url)) {
-          RiotControl.trigger('load-doc', x)
+    if (_path || _docUrl) {
+      var curFolderUrl = folderUrl(_docUrl);
+      for (var i = 0, j = list.length; i < j; ++i) {
+        var x = list[i]
+        if (!x.isFolder) {
+          if (!curFolderUrl || curFolderUrl !== folderUrl(x.url)) {
+            setTimeout(function() {
+              riot.route(x.url)
+            }, 1)
+          }
+          return
         }
-        return
       }
     }
   }
@@ -101,10 +124,12 @@ function Store() {
       self.trigger('content-saved')
     })
   }
-  var deleteDoc = function () {
-    var target = curDocUrl()
+  var deleteDoc = function (target) {
     if (!target) {
       return
+    }
+    if (typeof target === 'object') {
+      target = target.url
     }
     $.ajax({
       url: target,
@@ -113,7 +138,8 @@ function Store() {
         for (var i = 0; i < _list.length; ++i) {
           var doc = _list[i]
           if (doc.url == target) {
-            _list.split(i, i + 1)
+            _list.splice(i, 1)
+            RiotControl.trigger('list-updated')
             return
           }
         }
@@ -142,6 +168,7 @@ function Store() {
         })
       }
     })
+    sortList()
   }
   self.displayNav = function () {
     return _showNav
@@ -178,6 +205,9 @@ function Store() {
       _loading = false;
     })
   })
+  self.on('delete-doc', function(doc) {
+    deleteDoc(doc);
+  })
   self.on('editor-updated', function (content) {
     _content = content
     self.trigger('content-updated', content)
@@ -204,7 +234,7 @@ function Store() {
     });
     loadRepo()
   })
-  self.on('restore', function(path) {
+  self.on('mark-delete', function (item) {
     
   })
   self.on('img-pasted', function (blob) {
@@ -231,6 +261,7 @@ function Store() {
         isFolder: false,
         current: true
       })
+      sortList()
       _content = ''
       RiotControl.trigger('content-loaded', _content)
     } else if ('rename' == type) {

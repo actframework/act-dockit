@@ -31,6 +31,7 @@
     #nav ul {
       list-style-type: none;
       padding-left: 0;
+      padding-top: 10px;
     }
 
     #nav ul li {
@@ -42,36 +43,78 @@
     #nav ul li.current a * {
       color: #f7f6d7 !important;
     }
+    #nav ul li.current:hover {
+      background-color: #f7f6d7;
+    }
+    #nav ul li.current:hover a * {
+      color: #444 !important;
+    }
+
+    #nav ul li.deleting a * {
+      text-decoration: line-through;
+    }
 
     #nav ul li a span {
       font-size: 10pt;
       padding-left: 6px;
+    }
+
+    #nav ul li.deleting i.delete {
+      display: none !important;
+    }
+
+    #nav ul li.deleting:hover i.recover {
+      display: inline-block;
+      text-decoration: none !important;
+    }
+
+    #nav ul li i.delete, #nav ul li i.recover {
+      display: none;
+      float: right;
+      padding-right: 22px;
+      cursor: pointer;
+    }
+
+    #nav ul li:hover i.delete {
+      display: inline-block;
+    }
+
+    #nav ul li:hover {
+      background-color: #ccc;
+      color: #444;
+    }
+
+    #nav ul li:hover * {
+      color: #444 !important;
     }
   </style>
   <div id="nav" style="width: {width()};overflow-x: {overflowX()}">
     <virtual if="{window.appStore.displayNav()}">
       <i class="fa fa-compress" aria-hidden="true" id="close-nav" onclick={toggleNav}></i>
       <ul>
-        <li class="{current: item.current}"  each="{item in window.appStore.getList()}">
+        <li class="{current: item.current, deleting: item.deleting}"  each="{item in window.appStore.getList()}">
           <a href="#{item.url}">
             <virtual if={item.isFolder}>
               <i class="fa fa-folder" aria-hidden="true"></i>
             </virtual>
             <virtual if={!item.isFolder}>
-              <i class="fa fa-file-o" aria-hidden="true" if="{!item.current}"></i>
+              <i class="fa fa-file-o nohover" aria-hidden="true" if="{!item.current}"></i>
               <virtual if="{item.current}">
-                  <i class="fa fa-edit" aria-hidden="true"></i>
+                  <i class="fa fa-edit nohover" aria-hidden="true"></i>
               </virtual>
-
             </virtual>
             <span>{item.label}</span></span>
           </a>
+          <virtual if={!item.isFolder && !item.current}>
+            <i class="fa fa-eraser delete" aria-hidden="true" onclick={delete} title="delete {item.label}"></i>
+            <i class="fa fa-undo recover" aria-hidden="true" onclick={revertDelete} title="undo deleting"></i>
+          </virtual>
         </li>
       </ul>
     </virtual>
   </div>
   <script>
-    var self = this
+    var self = this, deletingTimer = {}
     self.toggleNav = function () {
       RiotControl.trigger('toggle-nav')
     }
@@ -81,9 +124,22 @@
     self.overflowX = function () {
       return window.appStore.displayNav() ? 'auto' : 'hidden'
     }
-    self.load = function (e) {
+    self.delete = function (e) {
       e.stopImmediatePropagation()
-      RiotControl.trigger('load-doc', e.item.item)
+      var doc = e.item.item;
+      doc.deleting = true;
+      deletingTimer[doc] = setTimeout(function() {
+        RiotControl.trigger('delete-doc', doc)
+      }, 10 * 1000)
+      return false
+    }
+    self.revertDelete = function(e) {
+      e.stopImmediatePropagation()
+      delete e.item.item.deleting;
+      var timer = deletingTimer[e.item.item];
+      if (timer) {
+        clearTimeout(timer)
+      }
       return false
     }
     self.on('updated', function() {
