@@ -50,11 +50,14 @@
     #command ul li:hover, #command ul li.selected {
       background-color: #999;
     }
+    #command ul li .shortcut {
+      float: right;
+    }
   </style>
   <div id="command" class="{show: show()}" autofocus>
     <input id="command-box" type="text" placeholder="command" />
     <ul class="{show: showDDL()}">
-      <li each="{cmd in filtered()}" class="{selected: isSelected(cmd)}" onclick={chooseCommand}>{cmd.text}</li>
+      <li each="{cmd in filtered()}" class="{selected: isSelected(cmd)}" onclick={chooseCommand}>{cmd.text}<span class="shortcut">{cmd.shortcut}</span></li>
     </ul>
   </div>
   <script>
