@@ -885,14 +885,20 @@
 //     this.changed();
 //   }
   };
+  
+  var _log = function(obj) {
+    console.log(Date.now() + ' >>> ' + obj);
+  }
 
   Editor.prototype.changed = function(evt){
+    _log("triggering changed");
     var code = this.getText();
 
     var ss = this.selMgr.getStart(),
       se = this.selMgr.getEnd();
 
     this.saveScrollPos();
+    _log("scroll pos saved");
 
     var setHTML;
 
@@ -902,6 +908,7 @@
       this._prevHTML = setHTML = Prism['highlight'](code, md);
     }
     this._prevCode = code;
+    _log("_preCode set");
 
     if(setHTML !== undefined){
       if(!/\n$/.test(code)) {
@@ -913,14 +920,17 @@
       this.el.replaceChild(dummy, this.inner);
       this.inner = dummy;
     }
+    _log("inner set")
 
     this.restoreScrollPos();
+    _log("scroll pos restored")
 
     if(ss !== null || se !== null) {
       this.selMgr.setRange(ss, se);
     }
 
     this.fireChange();
+    _log("change fired");
   };
 
   Editor.prototype.saveScrollPos = function(){

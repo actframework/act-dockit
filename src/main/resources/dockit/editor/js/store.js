@@ -1,10 +1,29 @@
 function Store() {
   riot.observable(this)
   var self = this
-  var _showNav = true, _repoUrl, _imgUrl, _path, _list, _content
+  var _showNav = true, _repoUrl, _imgUrl, _path, _list, _content, _loading, _docUrl
   var setList = function (list) {
-    _list = list
+    _list = list;
+    sortList();
     self.trigger(EVENT.LIST_UPDATED)
+  }
+  var sortList = function() {
+    _list.sort(function(a, b) {
+      if (a.isFolder && b.isFolder) {
+        if (a.label === '..') {
+          return -1
+        } else if (b.label === '..') {
+          return 1;
+        }
+        return a.url < b.url;
+      } else if (a.isFolder) {
+        return -1;
+      } else if (b.isFolder) {
+        return 1;
+      } else {
+        return a.url >= b.url;
+      }
+    })
   }
   var target = function () {
     var load = _repoUrl
@@ -26,6 +45,18 @@ function Store() {
     var doc = curDoc()
     return doc ? doc.url : false
   }
+  var folderUrl = function(path) {
+    if (!path) return false
+    if (typeof path == 'object') {
+      path = path.url;
+    }
+    path = path.substr(_repoUrl.length);
+    var n = path.lastIndexOf('/');
+    if (n > -1) {
+      path = path.substr(0, n);
+    }
+    return path;
+  }
   var loadRepo = function () {
     $.get(target(), onRemoteListLoad)
   }
@@ -46,13 +77,43 @@ function Store() {
       }
     }
     setList(list)
-    for (var i = 0, j = list.length; i < j; ++i) {
-      var x = list[i]
-      if (!x.isFolder) {
-        RiotControl.trigger(EVENT.LOAD_DOC, x)
-        return
+    refreshCurrent(null);
+    if (_path || _docUrl) {
+      var curFolderUrl = folderUrl(_docUrl);
+      for (var i = 0, j = list.length; i < j; ++i) {
+        var x = list[i]
+        if (!x.isFolder) {
+          if (!curFolderUrl || curFolderUrl !== folderUrl(x.url)) {
+            setTimeout(function() {
+              riot.route(x.url)
+            }, 1)
+          }
+          return
+        }
       }
     }
+  }
+  var refreshCurrent = function(item) {
+    if (item) {
+      var url = item;
+      if (typeof item === 'object') {
+        url = item.url;
+      }
+      if (_docUrl === url) {
+        return;
+      }
+      _docUrl = url;
+    } else {
+      item = _docUrl;
+    }
+    _list.forEach(function (element) {
+      if (element === item || element.url === item) {
+        element.current = true
+      } else {
+        delete element.current
+      }
+    })
+    RiotControl.trigger('list-updated');
   }
   var saveDoc = function () {
     var target = curDocUrl()
@@ -63,10 +124,12 @@ function Store() {
       self.trigger(EVENT.CONTENT_SAVED)
     })
   }
-  var deleteDoc = function () {
-    var target = curDocUrl()
+  var deleteDoc = function (target) {
     if (!target) {
       return
+    }
+    if (typeof target === 'object') {
+      target = target.url
     }
     $.ajax({
       url: target,
@@ -75,7 +138,8 @@ function Store() {
         for (var i = 0; i < _list.length; ++i) {
           var doc = _list[i]
           if (doc.url == target) {
-            _list.split(i, i + 1)
+            _list.splice(i, 1)
+            RiotControl.trigger(EVENT.LIST_UPDATED)
             return
           }
         }
@@ -104,6 +168,7 @@ function Store() {
         })
       }
     })
+    sortList()
   }
   self.displayNav = function () {
     return _showNav
@@ -119,15 +184,29 @@ function Store() {
     self.trigger(EVENT.NAV_TOGGLED)
   })
   self.on(EVENT.LOAD_DOC, function (item) {
-    saveDoc()
-    var url = item.url
-    if (item.isFolder) {
-      $.get(url, onRemoteListLoad)
-    } else if (url.endsWith('.md')) {
-      $.get(url, function (content) {
-        RiotControl.trigger(EVENT.REMOTE_CONTENT_LOADED, content, item)
-      })
+    if (_loading) {
+      return;
     }
+    _loading = true;
+    saveDoc()
+    var url = item;
+    if (typeof item == 'object') {
+      url = item.url
+    }
+    if (!url.startsWith(_repoUrl)) {
+      url = _repoUrl + url;
+    }
+    $.get(url, function(data) {
+      if (typeof data == 'string') {
+        RiotControl.trigger(EVENT.REMOTE_CONTENT_LOADED, data, item)
+      } else {
+        onRemoteListLoad(data);
+      }
+      _loading = false;
+    })
+  })
+  self.on('delete-doc', function(doc) {
+    deleteDoc(doc);
   })
   self.on(EVENT.EDITOR_UPDATED, function (content) {
     _content = content
@@ -136,18 +215,26 @@ function Store() {
   })
   self.on(EVENT.REMOTE_CONTENT_LOADED, function (content, item) {
     _content = content;
-    _list.forEach(function (element) {
-      if (element == item) {
-        element.current = true
-      } else {
-        delete element.current
-      }
-    })
+    refreshCurrent(item);
+    var itemFolder = folderUrl(item);
+    if (itemFolder != _path) {
+      setTimeout(function(){
+        RiotControl.trigger('load-doc', itemFolder);
+      }, 1);
+    }
     self.trigger(EVENT.CONTENT_LOADED, content)
   })
   self.on(EVENT.REMOTE_CONFIG_LOADED, function (config) {
     _repoUrl = config.repoUrl
     _imgUrl = _repoUrl + config.imgPath
+    riot.route(_repoUrl + '..', function(path) {
+      path = '/' + path;
+      console.log("routing " + path);
+      RiotControl.trigger(EVENT.LOAD_DOC, path);
+    });
+    setTimeout(function() {
+      riot.route.start(true);
+    }, 1)
     loadRepo()
   })
   self.on(EVENT.IMG_PASTED, function (blob) {
@@ -174,8 +261,9 @@ function Store() {
         isFolder: false,
         current: true
       })
-      _content = ''
-      RiotControl.trigger(EVENT.CONTENT_LOADED, _content)
+      sortList();
+      _content = '';
+      riot.route(_repoUrl + value);
     } else if ('rename' == type) {
       renameDoc(value)
     }
@@ -187,7 +275,7 @@ function Store() {
         e.preventDefault()
         saveDoc()
         return false
-      } else if (e.keyCode == 77) { // ctrl-m
+      } else if (e.keyCode == 77) { // ctrl-b
         e.preventDefault()
         var filename = '/new-file.md'
         if (_path) {
@@ -209,4 +297,6 @@ function Store() {
       }
     }
   });
+
 }
+
