@@ -205,7 +205,7 @@ function Store() {
       _loading = false;
     })
   })
-  self.on('delete-doc', function(doc) {
+  self.on(EVENT.DELETE_DOC, function(doc) {
     deleteDoc(doc);
   })
   self.on(EVENT.EDITOR_UPDATED, function (content) {
@@ -275,7 +275,7 @@ function Store() {
         e.preventDefault()
         saveDoc()
         return false
-      } else if (e.keyCode == 77) { // ctrl-b
+      } else if (e.keyCode == 77) { // ctrl-m
         e.preventDefault()
         var filename = '/new-file.md'
         if (_path) {

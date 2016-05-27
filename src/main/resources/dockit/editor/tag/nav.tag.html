@@ -139,7 +139,7 @@
       var doc = e.item.item;
       doc.deleting = true;
       deletingTimer[doc] = setTimeout(function() {
-        RiotControl.trigger('delete-doc', doc)
+        RiotControl.trigger(EVENT.DELETE_DOC, doc)
       }, 10 * 1000)
       return false
     }

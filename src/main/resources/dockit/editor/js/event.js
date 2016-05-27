@@ -3,6 +3,7 @@ var EVENT = {
 	TOGGLE_OVERLAY: 'toggle-overlay',
 	NAV_TOGGLED: 'nav-toggled',
 	LOAD_DOC: 'load-doc',
+	DELETE_DOC: 'delete-doc',
 	EDITOR_UPDATED: 'editor-updated',
 	CONTENT_LOADED: 'content-loaded',
 	CONTENT_UPDATED: 'content-updated',
