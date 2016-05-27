@@ -237,9 +237,6 @@ function Store() {
     }, 1)
     loadRepo()
   })
-  self.on('mark-delete', function (item) {
-    
-  })
   self.on('img-pasted', function (blob) {
     var reader = new FileReader()
     reader.onload = function (e) {
@@ -264,9 +261,9 @@ function Store() {
         isFolder: false,
         current: true
       })
-      sortList()
-      _content = ''
-      RiotControl.trigger('content-loaded', _content)
+      sortList();
+      _content = '';
+      riot.route(_repoUrl + value);
     } else if ('rename' == type) {
       renameDoc(value)
     }
