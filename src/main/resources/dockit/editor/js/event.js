@@ -4,6 +4,7 @@ var EVENT = {
 	NAV_TOGGLED: 'nav-toggled',
 	LOAD_DOC: 'load-doc',
 	DELETE_DOC: 'delete-doc',
+	SAVE_DOC: 'save-doc',
 	EDITOR_UPDATED: 'editor-updated',
 	CONTENT_LOADED: 'content-loaded',
 	CONTENT_UPDATED: 'content-updated',
@@ -17,6 +18,15 @@ var EVENT = {
 	BIG_INPUT_CANCELED: 'big-input-canceled',
 	ASK_NEW_FILENAME: 'ask-new-filename',
 	ASK_RENAME: 'ask-rename',
-	SHOW_HELP: 'show_help',
-	HIDE_HELP: 'hide_help'
+	CREATE_NEW_DOC: 'create-new-doc',
+	RENAME_DOC: 'rename-doc',
+	SHOW_HELP: 'show-help',
+	HIDE_HELP: 'hide-help',
+	SHOW_COMMAND: 'show-command',
+	HIDE_COMMAND: 'hide-command',
+	TYPE_COMMAND: 'type-command',
+	COMMAND_UP: 'command-up',
+	COMMAND_DOWN: 'command-down',
+	SELECT_COMMAND: 'select-command',
+	CANCEL_ALL: 'cancel-all'
 };

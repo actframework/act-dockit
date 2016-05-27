@@ -20,21 +20,21 @@
   </style>
   <div id="overlay" class="{show: show()}"></div>
   <script>
-    var show = false, self = this
+    var show = false, self = this;
     self.show = function() {
       return show;
-    }
+    };
     RiotControl.on(EVENT.TOGGLE_OVERLAY, function() {
       show = !show;
       self.update();
-    })
-    RiotControl.on([EVENT.ASK_NEW_FILENAME, EVENT.ASK_RENAME, EVENT.SHOW_HELP], function() {
+    });
+    RiotControl.on([EVENT.ASK_NEW_FILENAME, EVENT.ASK_RENAME, EVENT.SHOW_HELP, EVENT.SHOW_COMMAND], function() {
       show = true;
       self.update();
-    })
-    RiotControl.on([EVENT.BIG_INPUT_ENTERED, EVENT.BIG_INPUT_CANCELED, EVENT.HIDE_HELP], function() {
+    });
+    RiotControl.on([EVENT.BIG_INPUT_ENTERED, EVENT.BIG_INPUT_CANCELED, EVENT.HIDE_HELP, EVENT.HIDE_COMMAND, EVENT.CANCEL_ALL], function() {
       show = false;
       self.update();
-    })
+    });
   </script>
 </overlay>

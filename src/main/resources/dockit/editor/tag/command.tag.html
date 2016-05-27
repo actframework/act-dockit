@@ -1,0 +1,169 @@
+<command>
+  <style>
+    #command {
+      display: none;
+      position: fixed;
+      border-radius: 5px;
+      top: 100px;
+      left: 50%;
+      width: 400px;
+      margin-left: -200px;
+      z-index: 9999;
+      background-color: #fff;
+      border: solid 1px #707070;
+      box-shadow: 0 0 5px 1px #969696;
+      font-family: arial;
+    }
+    #command.show {
+      display: block;
+    }
+
+    #command-box {
+      width: 100%;
+      height: 30px;
+      outline: none;
+      font-size: 20px;
+      box-shadow: none;
+      padding: 5px 10px;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    #command ul {
+      display: none;
+      list-style: none;
+      background-color: #666;
+      color: #fff;
+      max-height: 300px;
+      margin: 0;
+      overflow: auto;
+      padding: 0;
+    }
+    #command ul.show {
+      display: block;
+    }
+
+    #command ul li {
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+    #command ul li:hover, #command ul li.selected {
+      background-color: #999;
+    }
+  </style>
+  <div id="command" class="{show: show()}" autofocus>
+    <input id="command-box" type="text" placeholder="command" />
+    <ul class="{show: showDDL()}">
+      <li each="{cmd in filtered()}" class="{selected: isSelected(cmd)}" onclick={chooseCommand}>{cmd.text}</li>
+    </ul>
+  </div>
+  <script>
+    var show = false, showDDL = false, index = 0, filtered = [], self = this, input;
+
+    this.show = function() {
+      return show;
+    };
+
+    this.showDDL = function() {
+      return showDDL;
+    };
+
+    this.filtered = function() {
+      return filtered;
+    };
+
+    this.filterCmd = function() {
+      var term = document.getElementById('command-box').value;
+
+      filtered = commands.filter(function(n) {
+        return n.text.toLowerCase().indexOf(term.toLowerCase()) > -1;
+      });
+    };
+
+    this.chooseCommand = function(e) {
+      RiotControl.trigger(EVENT.HIDE_COMMAND);
+      RiotControl.trigger(e.item.cmd.event);
+    };
+
+    this.isSelected = function(cmd) {
+      return cmd.event === filtered[index].event;
+    };
+
+    RiotControl.on(EVENT.SHOW_COMMAND, function() {
+      document.getElementById('command-box').value = '';
+      show = true;
+      showDDL = false;
+      index = 0;
+      self.update();
+    });
+
+    RiotControl.on(EVENT.HIDE_COMMAND, function() {
+      show = false;
+      self.update();
+    });
+
+    RiotControl.on(EVENT.TYPE_COMMAND, function() {
+      showDDL = true;
+      index = 0;
+      self.filterCmd();
+      self.update();
+    });
+
+    RiotControl.on(EVENT.COMMAND_UP, function() {
+      var len = filtered.length;
+      if(len > 0) {
+        if(index === 0) {
+          index = len - 1;
+        } else {
+          index--;
+        }
+        self.update();
+      }
+    });
+    RiotControl.on(EVENT.COMMAND_DOWN, function() {
+      var len = filtered.length;
+      if(len > 0) {
+        if(index === (len - 1)) {
+          index = 0;
+        } else {
+          index++;
+        }
+        self.update();
+      }
+    });
+
+    this.on('updated', function() {
+      if (!input) {
+        input = document.getElementById('command-box');
+        input.addEventListener('keydown', function(e) {
+          
+          if (e.keyCode === 38) {
+            e.preventDefault();
+            RiotControl.trigger(EVENT.COMMAND_UP);
+            return false;
+
+          } else if (e.keyCode === 40) {
+            e.preventDefault();
+            RiotControl.trigger(EVENT.COMMAND_DOWN);
+            return false;
+
+          } else if (e.keyCode === 13) {
+            e.preventDefault();
+            if(filtered.length > 0) {
+              RiotControl.trigger(EVENT.HIDE_COMMAND);
+              RiotControl.trigger(filtered[index].event);
+            }
+            return false;
+
+          } else {
+            RiotControl.trigger(EVENT.TYPE_COMMAND);
+            return false;
+          }
+        });
+      }
+      if (show) {
+        input.focus();
+      }
+    });
+  </script>
+</command>

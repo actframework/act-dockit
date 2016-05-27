@@ -121,48 +121,48 @@
     </virtual>
   </div>
   <script>
-    var self = this, deletingTimer = {}
+    var self = this, deletingTimer = {};
     self.toggleNav = function () {
-      RiotControl.trigger(EVENT.TOGGLE_NAV)
-    }
+      RiotControl.trigger(EVENT.TOGGLE_NAV);
+    };
     self.showHelp = function () {
       RiotControl.trigger(EVENT.SHOW_HELP);
-    }
+    };
     self.width = function () {
-      return window.appStore.displayNav() ? '400px' : '10px'
-    }
+      return window.appStore.displayNav() ? '400px' : '10px';
+    };
     self.overflowX = function () {
-      return window.appStore.displayNav() ? 'auto' : 'hidden'
-    }
+      return window.appStore.displayNav() ? 'auto' : 'hidden';
+    };
     self.delete = function (e) {
-      e.stopImmediatePropagation()
+      e.stopImmediatePropagation();
       var doc = e.item.item;
       doc.deleting = true;
       deletingTimer[doc] = setTimeout(function() {
-        RiotControl.trigger(EVENT.DELETE_DOC, doc)
-      }, 10 * 1000)
-      return false
-    }
+        RiotControl.trigger(EVENT.DELETE_DOC, doc);
+      }, 10 * 1000);
+      return false;
+    };
     self.revertDelete = function(e) {
-      e.stopImmediatePropagation()
+      e.stopImmediatePropagation();
       delete e.item.item.deleting;
       var timer = deletingTimer[e.item.item];
       if (timer) {
-        clearTimeout(timer)
+        clearTimeout(timer);
       }
-      return false
-    }
+      return false;
+    };
     self.on('updated', function() {
-      var nav = document.getElementById('nav')
-      if (!nav) return
+      var nav = document.getElementById('nav');
+      if (!nav) return;
       if (!window.appStore.displayNav()) {
-        nav.addEventListener('click', self.toggleNav)
+        nav.addEventListener('click', self.toggleNav);
       } else {
-        nav.removeEventListener('click', self.toggleNav)
+        nav.removeEventListener('click', self.toggleNav);
       }
-    })
+    });
     RiotControl.on([EVENT.LIST_UPDATED, EVENT.CONTENT_LOADED], function (e) {
       self.update();
-    })
+    });
   </script>
 </nav>

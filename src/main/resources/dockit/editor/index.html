@@ -23,6 +23,7 @@
 <big-input></big-input>
 <overlay></overlay>
 <help></help>
+<command></command>
 <script type="riot/tag" src="tag/app.tag.html"></script>
 <script type="riot/tag" src="tag/nav.tag.html"></script>
 <script type="riot/tag" src="tag/editor.tag.html"></script>
@@ -31,23 +32,26 @@
 <script type="riot/tag" src="tag/overlay.tag.html"></script>
 <script type="riot/tag" src="tag/big-input.tag.html"></script>
 <script type="riot/tag" src="tag/help.tag.html"></script>
+<script type="riot/tag" src="tag/command.tag.html"></script>
 <script src="js/event.js"></script>
+<script src="js/commands.js"></script>
+
 <script>
   $(function() {
     var store = new Store();
     RiotControl.addStore(store);
-    riot.mount('*')
+    riot.mount('*');
     window.appStore = store;
     $.get("config", function(config) {
     RiotControl.trigger(EVENT.REMOTE_CONFIG_LOADED, config);
-    })
+    });
     riot.route.parser(null, function(path, filter) {
       var re = new RegExp('^' + filter.replace(/\*/g, '([^/?#]+?)').replace(/\.\./, '.*') + '$'),
-          args = path.match(re)
+          args = path.match(re);
 
-      if (args) return args[0]
-    })
-  })
+      if (args) return args[0];
+    });
+  });
 </script>
 </body>
 </html>

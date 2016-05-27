@@ -27,37 +27,37 @@
   <paste-catcher></paste-catcher>
   <div id="in"><pre id="code">{window.appStore.getContent()}</pre></div>
   <script>
-    var self = this, editor = false
+    var self = this, editor = false;
 
     this.on('updated', function() {
-      var dock = (document.getElementById('code'))
+      var dock = (document.getElementById('code'));
       if (dock && !editor) {
         editor = mdEdit(document.getElementById('code'), {
           change: function(content) {
-            RiotControl.trigger(EVENT.EDITOR_UPDATED, content)
+            RiotControl.trigger(EVENT.EDITOR_UPDATED, content);
           }
-        })
-        var len = editor.el.innerText.length
-        editor.selMgr.setRange(len, len)
+        });
+        var len = editor.el.innerText.length;
+        editor.selMgr.setRange(len, len);
       }
-    })
+    });
 
     RiotControl.on(EVENT.IMG_PASTED, function () {
-      editor.paste('uploading ...')
-    })
+      editor.paste('uploading ...');
+    });
 
     RiotControl.on(EVENT.IMG_UPLOADED, function(url) {
-      var paste = '![image](' + url + ')'
-      var start = editor.selMgr.getStart()
-      editor.selMgr.setRange(start - 'uploading ...'.length, start)
-      editor.paste(paste)
-    })
+      var paste = '![image](' + url + ')';
+      var start = editor.selMgr.getStart();
+      editor.selMgr.setRange(start - 'uploading ...'.length, start);
+      editor.paste(paste);
+    });
 
     RiotControl.on(EVENT.CONTENT_LOADED, function(content) {
-      self.update()
+      self.update();
       setTimeout(function() {
-        editor.setValue(content)
-      }, 100)
-    })
+        editor.setValue(content);
+      }, 100);
+    });
   </script>
 </editor>
