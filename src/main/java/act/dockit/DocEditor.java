@@ -1,24 +1,22 @@
 package act.dockit;
 
+import static act.controller.Controller.Util.redirect;
+
 import act.Act;
 import act.app.ActionContext;
 import act.app.App;
 import act.app.event.AppEventId;
 import act.controller.ParamNames;
-import act.handler.builtin.Redirect;
 import act.handler.builtin.controller.FastRequestHandler;
 import org.osgl.http.H;
+import org.osgl.mvc.result.Redirect;
 import org.osgl.mvc.result.RenderJSON;
 import org.osgl.util.C;
-import org.osgl.util.E;
 import org.osgl.util.IO;
 import org.osgl.util.S;
 
-import java.io.*;
-
-import static act.controller.Controller.Util.notFoundIfNot;
-import static act.controller.Controller.Util.notFoundIfNull;
-import static act.controller.Controller.Util.redirect;
+import java.io.File;
+import java.io.InputStream;
 
 /*
 
@@ -49,7 +47,7 @@ public class DocEditor extends FastRequestHandler {
     public void handle(ActionContext context) {
         String path = context.paramVal(ParamNames.PATH);
         if (S.blank(path)) {
-            new Redirect(urlContext + "/index.html").apply(context);
+            throw new Redirect(urlContext + "/index.html");
         } else {
             if (path.startsWith("/config")) {
                 new RenderJSON(C.newMap("repoUrl", docUrlContext, "imgPath", imgPath)).apply(context.req(), context.resp());

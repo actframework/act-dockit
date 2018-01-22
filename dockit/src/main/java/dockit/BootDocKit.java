@@ -1,7 +1,10 @@
 package dockit;
 
 import act.app.event.AppEventId;
-import act.dockit.*;
+import act.dockit.DocEditor;
+import act.dockit.DocKit;
+import act.dockit.FsDocRepo;
+import act.dockit.FsImgRepo;
 import act.handler.builtin.Redirect;
 import act.job.OnAppEvent;
 import org.osgl.http.H;

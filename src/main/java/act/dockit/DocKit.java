@@ -1,5 +1,8 @@
 package act.dockit;
 
+import static act.controller.Controller.Util.badRequestIfNot;
+import static act.controller.Controller.Util.notFoundIf;
+
 import act.Act;
 import act.app.ActionContext;
 import act.app.App;
@@ -7,7 +10,6 @@ import act.app.event.AppEventId;
 import act.controller.Controller;
 import act.route.Router;
 import act.util.IdGenerator;
-import act.view.ActServerError;
 import com.alibaba.fastjson.JSON;
 import org.osgl.$;
 import org.osgl.Osgl;
@@ -27,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import static act.controller.Controller.Util.badRequestIfNot;
-import static act.controller.Controller.Util.notFoundIf;
 
 /*
 
@@ -218,7 +217,7 @@ public class DocKit {
                     Controller.Util.notFoundIfNull(is);
                     return new RenderBinary(is, path, true);
                 } catch (IOException e) {
-                    return ActServerError.of(e);
+                    throw E.ioException(e);
                 }
             }
             if (isFolder(path)) {
@@ -244,9 +243,9 @@ public class DocKit {
                     }
                 });
                 if (S.notBlank(path)) {
-                    list.prepend(C.map("path", S.beforeLast(path, "/"), "isFolder", true, "label", ".."));
+                    list.prepend(C.Map("path", S.beforeLast(path, "/"), "isFolder", true, "label", ".."));
                 }
-                list.prepend(C.map("path", path, "isFolder", true, "label", "."));
+                list.prepend(C.Map("path", path, "isFolder", true, "label", "."));
                 result = new RenderJSON(JSON.toJSONString(list));
             } else if (isSource(path)) {
                 String source = docRepo.read(path);
@@ -257,7 +256,7 @@ public class DocKit {
                 }
             } else {
                 logger.warn("Resource not found by path: %s", path);
-                result = NotFound.INSTANCE;
+                result = NotFound.get();
             }
             return result;
         }
